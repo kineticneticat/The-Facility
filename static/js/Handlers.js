@@ -8,6 +8,7 @@ export let Failed = false;
 class Handler {
     data;
     constructor() {
+        this.data = undefined;
         TargetHandlers += 1;
     }
     /**call once asset loaded */
@@ -18,20 +19,21 @@ class Handler {
     handleResponse(response) {
         switch (response.status) {
             case 200:
-                return response.json();
+                return this.customResponseHandler(response);
             case 404:
-                this.failed();
+                this.failed(404);
                 break;
             default:
                 console.log(response);
                 console.error(`got a ${response.status}???`);
-                this.failed();
+                this.failed(response.status);
                 break;
         }
     }
     /**if handler fails */
-    failed() {
+    failed(status) {
         Failed = true;
+        this.customFailure(status);
     }
 }
 /** for loading room JSON */
@@ -46,6 +48,10 @@ export class RoomHandler extends Handler {
     }
     customCallback(data) {
         this.data = data;
+    }
+    customFailure(status) { }
+    customResponseHandler(response) {
+        return response.json();
     }
 }
 //# sourceMappingURL=Handlers.js.map

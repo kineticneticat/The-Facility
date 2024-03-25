@@ -1,6 +1,7 @@
 import { devRenderGround } from "./Grid.js";
 import { Failed, HandlersLoaded, TargetHandlers } from "./Handlers.js";
 import { Room } from "./Room.js";
+import { Vec3 } from "./Maths.js";
 export let canvas = document.getElementById("canvas");
 export let ctx = canvas.getContext("2d");
 let first = false;
@@ -27,6 +28,7 @@ function loop() {
         // triggers once after handlers loaded
         console.info("Handlers Loaded");
         first = true;
+        console.log(new Vec3(0, 0, 0));
     }
     if (Failed) {
         console.error("Handler Failed");

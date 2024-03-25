@@ -1,6 +1,5 @@
-"use strict";
 /** for screen coords */
-class Vec2 {
+export class Vec2 {
     x;
     y;
     constructor(x, y) {
@@ -13,21 +12,21 @@ class Vec2 {
     div(s) { return new Vec2(this.x / s, this.y / s); }
 }
 /** for world coords */
-class Vec3 {
+let vx = new Vec2(1, 0.5);
+let vz = new Vec2(-1, 0.5);
+export class Vec3 {
     x;
     y;
     z;
-    vx = new Vec2(1, 0.5);
-    vy = new Vec2(-1, 0.5);
-    /** z up */
+    /** x:left-up, y:up, z:right-up */
     constructor(x, y, z) {
         this.x = x;
         this.y = y;
         this.z = z;
     }
     get iso() {
-        let flat = this.vx.mul(this.x).add(this.vy.mul(this.x));
-        let vertical = new Vec2(0, this.z);
+        let flat = vx.mul(this.x).add(vz.mul(this.z));
+        let vertical = new Vec2(0, this.y);
         return flat.add(vertical);
     }
     add(b) { return new Vec3(this.x + b.x, this.y + b.y, this.z + b.z); }

@@ -6,36 +6,40 @@ export let HandlersLoaded = 0
 export let Failed = false
 
 /** basic handler */
-abstract class Handler {
-    data: any
+abstract class Handler<HandlerDataType> {
+    data: HandlerDataType | undefined
     constructor() {
+        this.data = undefined
         TargetHandlers += 1
     }
 
     /**call once asset loaded */
-    defaultCallback(data:any): void {
+    defaultCallback(data:HandlerDataType): void {
         HandlersLoaded += 1
         this.customCallback(data)
     }
-    abstract customCallback(data:any):void
+    abstract customCallback(data:HandlerDataType):void
+    abstract customFailure(status:number):void
+    abstract customResponseHandler(response:Response):Promise<HandlerDataType>
     handleResponse(response:Response) {
         switch (response.status) {
             case 200:
-                return response.json()
+                return this.customResponseHandler(response)
             case 404:
-                this.failed()
+                this.failed(404)
                 break
             default:
                 console.log(response)
                 console.error(`got a ${response.status}???`)
-                this.failed()
+                this.failed(response.status)
                 break
         }
         
     }
     /**if handler fails */
-    failed() {
+    failed(status:number) {
         Failed = true
+        this.customFailure(status)
     }
 }
 
@@ -44,7 +48,7 @@ interface RoomData {
 }
 
 /** for loading room JSON */
-export class RoomHandler extends Handler {
+export class RoomHandler extends Handler<RoomData> {
     fileName: string
     constructor(fileName:string) {
         super()
@@ -56,5 +60,8 @@ export class RoomHandler extends Handler {
     customCallback(data: RoomData): void {
         this.data = data
     }
-
+    customFailure(status: number): void {}
+    customResponseHandler(response: Response): Promise<RoomData> {
+        return response.json()
+    }
 }
