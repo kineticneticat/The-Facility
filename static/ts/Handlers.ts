@@ -4,6 +4,15 @@ export let TargetHandlers = 0
 export let HandlersLoaded = 0
 /** if a handler has failed */
 export let Failed = false
+/** stores assets for use */
+export let Assets: (Asset)[] = []
+
+export type AssetIndex = number
+interface Asset {
+    name: string,
+    file: string,
+    data: any
+}
 
 /** basic handler */
 abstract class Handler<HandlerDataType> {
@@ -16,6 +25,12 @@ abstract class Handler<HandlerDataType> {
     /**call once asset loaded */
     defaultCallback(data:HandlerDataType): void {
         HandlersLoaded += 1
+        // this.Asset = Assets.push({
+        //     "file": this.fileName,
+        //     "name": this.name,
+        //     "data": data
+        // } as Asset)-1 as AssetIndex
+
         this.customCallback(data)
     }
     abstract customCallback(data:HandlerDataType):void
@@ -43,25 +58,29 @@ abstract class Handler<HandlerDataType> {
     }
 }
 
-interface RoomData {
-    "layout": [[string]]
-}
 
-/** for loading room JSON */
-export class RoomHandler extends Handler<RoomData> {
+
+/** for loading Generic JSON */
+export class JSONHandler<JSONType> extends Handler<JSONType> {
     fileName: string
     constructor(fileName:string) {
         super()
         this.fileName = fileName
         fetch(fileName)
             .then(response => this.handleResponse(response))
-            .then(data => this.defaultCallback(data as RoomData))
+            .then(data => this.defaultCallback(data as JSONType))
     }
-    customCallback(data: RoomData): void {
+    customCallback(data: JSONType): void {
         this.data = data
     }
     customFailure(status: number): void {}
-    customResponseHandler(response: Response): Promise<RoomData> {
+    customResponseHandler(response: Response): Promise<JSONType> {
         return response.json()
     }
 }
+
+interface RoomData {
+    "layout": [[string]]
+}
+
+export let RoomHandler = JSONHandler<RoomData>

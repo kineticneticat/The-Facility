@@ -4,6 +4,8 @@ export let TargetHandlers = 0;
 export let HandlersLoaded = 0;
 /** if a handler has failed */
 export let Failed = false;
+/** stores assets for use */
+export let Assets = [];
 /** basic handler */
 class Handler {
     data;
@@ -14,6 +16,11 @@ class Handler {
     /**call once asset loaded */
     defaultCallback(data) {
         HandlersLoaded += 1;
+        // this.Asset = Assets.push({
+        //     "file": this.fileName,
+        //     "name": this.name,
+        //     "data": data
+        // } as Asset)-1 as AssetIndex
         this.customCallback(data);
     }
     handleResponse(response) {
@@ -36,8 +43,8 @@ class Handler {
         this.customFailure(status);
     }
 }
-/** for loading room JSON */
-export class RoomHandler extends Handler {
+/** for loading Generic JSON */
+export class JSONHandler extends Handler {
     fileName;
     constructor(fileName) {
         super();
@@ -54,4 +61,5 @@ export class RoomHandler extends Handler {
         return response.json();
     }
 }
+export let RoomHandler = (JSONHandler);
 //# sourceMappingURL=Handlers.js.map
