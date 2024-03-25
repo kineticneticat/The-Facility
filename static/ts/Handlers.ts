@@ -9,48 +9,57 @@ export let Assets: (Asset)[] = []
 
 export type AssetIndex = number
 interface Asset {
-    name: string,
     file: string,
     data: any
 }
 
 /** basic handler */
 abstract class Handler<HandlerDataType> {
-    data: HandlerDataType | undefined
-    constructor() {
-        this.data = undefined
+    data: HandlerDataType
+    assetIndex : AssetIndex
+    fileName: string
+    firstLoad: Boolean
+    constructor(fn:string) {
+        if (!this.verifyFilename(fn)) {
+            throw TypeError(`File ${fn} is not valid for this Handler}`)
+            return
+        }
+        this.firstLoad = true
+        this.fileName = fn
+        this.data = this.blankData()
+        this.assetIndex = -1
+
+        // make sure asset hasnt already been loaded
+        for (const idx in Assets) {
+            let asset = Assets[parseInt(idx)]
+            if (asset.file == fn) {
+                this.firstLoad = false
+                this.data = asset.data
+                this.assetIndex = parseInt(idx)
+                return 
+            }
+        }
+        //if first load; do normal stuff
+        
         TargetHandlers += 1
+        this.getData()
     }
 
     /**call once asset loaded */
     defaultCallback(data:HandlerDataType): void {
         HandlersLoaded += 1
-        // this.Asset = Assets.push({
-        //     "file": this.fileName,
-        //     "name": this.name,
-        //     "data": data
-        // } as Asset)-1 as AssetIndex
+        this.assetIndex = Assets.push({
+            "file": this.fileName,
+            "data": data
+        } as Asset)-1 as AssetIndex
 
         this.customCallback(data)
     }
+    abstract blankData():HandlerDataType
+    abstract getData():void
     abstract customCallback(data:HandlerDataType):void
     abstract customFailure(status:number):void
-    abstract customResponseHandler(response:Response):Promise<HandlerDataType>
-    handleResponse(response:Response) {
-        switch (response.status) {
-            case 200:
-                return this.customResponseHandler(response)
-            case 404:
-                this.failed(404)
-                break
-            default:
-                console.log(response)
-                console.error(`got a ${response.status}???`)
-                this.failed(response.status)
-                break
-        }
-        
-    }
+    abstract verifyFilename(fn:string):boolean
     /**if handler fails */
     failed(status:number) {
         Failed = true
@@ -62,25 +71,79 @@ abstract class Handler<HandlerDataType> {
 
 /** for loading Generic JSON */
 export class JSONHandler<JSONType> extends Handler<JSONType> {
-    fileName: string
-    constructor(fileName:string) {
-        super()
-        this.fileName = fileName
-        fetch(fileName)
-            .then(response => this.handleResponse(response))
+    
+    constructor(fileName:string) { super(fileName) }
+    blankData():JSONType {
+        return {} as JSONType
+    }
+    getData() {
+        fetch(this.fileName)
+            .then(response => this.handleResponse(response)?.json())
             .then(data => this.defaultCallback(data as JSONType))
     }
     customCallback(data: JSONType): void {
         this.data = data
     }
     customFailure(status: number): void {}
-    customResponseHandler(response: Response): Promise<JSONType> {
-        return response.json()
+    handleResponse(response: Response): Response {
+        switch (response.status) {
+            case 200:
+                break
+            case 404:
+                this.failed(404)
+                break
+            default:
+                console.log(response)
+                console.error(`got a ${response.status}???`)
+                this.failed(response.status)
+                break
+        }
+        return response
+    }
+    verifyFilename(fn: string): boolean {
+        return fn.endsWith(".json")
     }
 }
 
-interface RoomData {
+export interface RoomJSONData {
     "layout": [[string]]
 }
+export let RoomHandler = JSONHandler<RoomJSONData>
 
-export let RoomHandler = JSONHandler<RoomData>
+export interface TileJSONData {
+    "name": string,
+    "corners": {
+        "000": [number, number, number],
+        "100": [number, number, number],
+        "001": [number, number, number],
+        "010": [number, number, number],
+        "101": [number, number, number],
+        "110": [number, number, number],
+        "011": [number, number, number],
+        "111": [number, number, number]
+    },
+    "texture": string
+}
+export let TileHandler = JSONHandler<TileJSONData>
+
+export interface ImageData {
+    img: HTMLImageElement
+}
+
+export class ImageHandler extends Handler<HTMLImageElement> {
+    constructor(fn:string) { super(fn) }
+    blankData(): HTMLImageElement {
+        return new Image()
+    }
+    getData(): void {
+        this.data = new Image() 
+        this.data.src = this.fileName
+        this.data.onload = () => this.defaultCallback(this.data)
+    }
+    customCallback(data: HTMLImageElement): void {}
+    customFailure(status: number): void {}
+    verifyFilename(fn: string): boolean {
+        return fn.endsWith(".png")
+    }
+
+}

@@ -1,15 +1,10 @@
-import { devRenderGround, devRenderTileOutline } from "./Grid.js";
-import { Assets, Failed, HandlersLoaded, TargetHandlers } from "./Handlers.js";
-import { Move, key } from "./Player.js";
-// import { Room } from "./Room.js"
-import { Vec3 } from "./Maths.js";
-import { Tile, Tiles } from "./Tile.js";
-import { tileData } from "./tiles.js";
+import { devRenderGround } from "./Grid.js";
+import { Assets, Failed, HandlersLoaded, ImageHandler, TargetHandlers } from "./Handlers.js";
+import { Move } from "./Player.js";
+// import { Tile, Tiles } from "./Tile.js"
 export let canvas = document.getElementById("canvas");
 export let ctx = canvas.getContext("2d");
 let first = false;
-// let tileHandlers: [ImageHandler, string][] = []
-// export let currentRoom: Room
 export let canvasSize = {
     width: window.innerWidth,
     height: window.innerHeight
@@ -20,11 +15,9 @@ window.onload = () => {
     init();
 };
 function init() {
-    for (const tile of tileData) {
-        new Tile(tile.name, tile.shape);
-    }
-    // currentRoom = new Room("dev.json", "dev_room")
     ctx.imageSmoothingEnabled = false;
+    // init handlers from here
+    let img1 = new ImageHandler("static/img/tiles/dev_ground.png");
     loop();
 }
 function loop() {
@@ -35,13 +28,8 @@ function loop() {
     if (!first && (HandlersLoaded == TargetHandlers) && !Failed) {
         // triggers once after handlers loaded
         console.info("Handlers Loaded");
-        for (const tile of Tiles) {
-            tile.loaded();
-        }
-        console.log(Assets);
-        console.log(Tiles);
         first = true;
-        console.log(new Vec3(0, 0, 0));
+        console.log(Assets);
     }
     if (Failed) {
         console.error("Handler Failed");
@@ -50,16 +38,13 @@ function loop() {
     if (HandlersLoaded == TargetHandlers && !Failed) {
         // all handlers loaded
         Draw();
-        console.log(key);
+        // console.log(key)
         Move();
     }
     requestAnimationFrame(loop);
 }
 function Draw() {
     ctx.clearRect(0, 0, canvasSize.width, canvasSize.height);
-    // Tiles[0].draw(ctx, new Vec3(0, 0, -1))
-    // currentRoom.draw(ctx)
     devRenderGround(ctx);
-    devRenderTileOutline(ctx, Tiles[0], new Vec3(0, 0, -1));
 }
 //# sourceMappingURL=Main.js.map

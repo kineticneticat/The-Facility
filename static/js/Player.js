@@ -22,10 +22,6 @@ export let Directions = {
     RIGHT: new Vec3(1, 0, 0)
 };
 export let key = {
-    W: false,
-    A: false,
-    S: false,
-    D: false,
     Up: false,
     Down: false,
     Left: false,
@@ -36,28 +32,20 @@ export let key = {
 document.addEventListener('keydown', (e) => {
     // console.log(e.keyCode)
     switch (e.keyCode) {
-        case keyCodes.W:
-            key.W = true;
-            break;
-        case keyCodes.A:
-            key.A = true;
-            break;
-        case keyCodes.S:
-            key.S = true;
-            break;
-        case keyCodes.D:
-            key.D = true;
-            break;
         case keyCodes.UP:
+        case keyCodes.W:
             key.Up = true;
             break;
         case keyCodes.DOWN:
+        case keyCodes.S:
             key.Down = true;
             break;
         case keyCodes.LEFT:
+        case keyCodes.A:
             key.Left = true;
             break;
         case keyCodes.RIGHT:
+        case keyCodes.D:
             key.Right = true;
             break;
         case keyCodes.SPACE:
@@ -70,28 +58,20 @@ document.addEventListener('keydown', (e) => {
 });
 document.addEventListener('keyup', (e) => {
     switch (e.keyCode) {
-        case keyCodes.W:
-            key.W = false;
-            break;
-        case keyCodes.A:
-            key.A = false;
-            break;
-        case keyCodes.S:
-            key.S = false;
-            break;
-        case keyCodes.D:
-            key.D = false;
-            break;
         case keyCodes.UP:
+        case keyCodes.W:
             key.Up = false;
             break;
         case keyCodes.DOWN:
+        case keyCodes.S:
             key.Down = false;
             break;
         case keyCodes.LEFT:
+        case keyCodes.A:
             key.Left = false;
             break;
         case keyCodes.RIGHT:
+        case keyCodes.D:
             key.Right = false;
             break;
         case keyCodes.SPACE:
