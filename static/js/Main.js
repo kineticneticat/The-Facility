@@ -1,15 +1,18 @@
-import { devRenderGround } from "./Grid.js";
-import { Failed, HandlersLoaded, TargetHandlers } from "./Handlers.js";
-import { Room } from "./Room.js";
+import { devRenderGround, devRenderTileOutline } from "./Grid.js";
+import { Assets, Failed, HandlersLoaded, TargetHandlers } from "./Handlers.js";
+import { Move, key } from "./Player.js";
+// import { Room } from "./Room.js"
 import { Vec3 } from "./Maths.js";
 import { Tile, Tiles } from "./Tile.js";
 import { tileData } from "./tiles.js";
 export let canvas = document.getElementById("canvas");
 export let ctx = canvas.getContext("2d");
 let first = false;
-let canvasSize = {
-    width: 500,
-    height: 500
+// let tileHandlers: [ImageHandler, string][] = []
+// export let currentRoom: Room
+export let canvasSize = {
+    width: window.innerWidth,
+    height: window.innerHeight
 };
 window.onload = () => {
     canvas.width = canvasSize.width;
@@ -20,7 +23,7 @@ function init() {
     for (const tile of tileData) {
         new Tile(tile.name, tile.shape);
     }
-    currentRoom = new Room("dev.json", "dev_room");
+    // currentRoom = new Room("dev.json", "dev_room")
     ctx.imageSmoothingEnabled = false;
     loop();
 }
@@ -55,7 +58,7 @@ function loop() {
 function Draw() {
     ctx.clearRect(0, 0, canvasSize.width, canvasSize.height);
     // Tiles[0].draw(ctx, new Vec3(0, 0, -1))
-    currentRoom.draw(ctx);
+    // currentRoom.draw(ctx)
     devRenderGround(ctx);
     devRenderTileOutline(ctx, Tiles[0], new Vec3(0, 0, -1));
 }

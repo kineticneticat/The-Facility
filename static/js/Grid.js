@@ -1,3 +1,4 @@
+// import { Room } from "./Room.js";
 import { Vec3 } from "./Maths.js";
 export function devRenderGround(ctx) {
     let list = [...Array(8).keys()];
@@ -37,6 +38,6 @@ export function devRenderTileOutline(ctx, tile, pos) {
     ctx.lineTo(...a(pos.add(new Vec3(0, 0, tile.shape.nn))));
     ctx.stroke();
 }
-export function devRenderRoom(room) {
-}
+// export function devRenderRoom(room: Room) {
+// }
 //# sourceMappingURL=Grid.js.map

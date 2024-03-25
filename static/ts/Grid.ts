@@ -1,5 +1,5 @@
 import { ctx, canvasSize } from "./Main.js";
-import { Room } from "./Room.js";
+// import { Room } from "./Room.js";
 import { Vec3, Vec2 } from "./Maths.js";
 import { Tile } from "./Tile.js";
 
@@ -48,6 +48,6 @@ export function devRenderTileOutline(ctx:CanvasRenderingContext2D, tile:Tile, po
     ctx.stroke()
 }
 
-export function devRenderRoom(room: Room) {
+// export function devRenderRoom(room: Room) {
     
-}
+// }

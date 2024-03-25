@@ -1,7 +1,6 @@
 import { canvasSize } from "./Main.js";
 /** for screen coords */
 export class Vec2 {
-export class Vec2 {
     x;
     y;
     constructor(x, y) {

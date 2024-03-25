@@ -1,7 +1,7 @@
 import { devRenderGround, devRenderTileOutline } from "./Grid.js"
 import { AssetIndex, Assets, Failed, HandlersLoaded,TargetHandlers } from "./Handlers.js"
 import { Move, key } from "./Player.js"
-import { Room } from "./Room.js"
+// import { Room } from "./Room.js"
 import { Vec3, Vec2 } from "./Maths.js"
 import { Tile, Tiles } from "./Tile.js"
 import { tileData } from "./tiles.js"
@@ -11,7 +11,7 @@ export let ctx = canvas.getContext("2d") as CanvasRenderingContext2D
 let first = false
 
 // let tileHandlers: [ImageHandler, string][] = []
-export let currentRoom: Room
+// export let currentRoom: Room
 
 export let canvasSize = {
     width: window.innerWidth,
@@ -28,7 +28,7 @@ function init() {
     for (const tile of tileData) {
         new Tile(tile.name, tile.shape)
     }
-    currentRoom = new Room("dev.json", "dev_room")
+    // currentRoom = new Room("dev.json", "dev_room")
     ctx.imageSmoothingEnabled = false
     
 
@@ -78,7 +78,7 @@ function Draw() {
     
     // Tiles[0].draw(ctx, new Vec3(0, 0, -1))
 
-    currentRoom.draw(ctx)
+    // currentRoom.draw(ctx)
 
 
     devRenderGround(ctx)
