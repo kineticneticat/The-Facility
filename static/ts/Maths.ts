@@ -8,6 +8,7 @@ export class Vec2 {
         this.x = x
         this.y = y
     }
+    static list(arr:[number, number]):Vec2 {return new Vec2(arr[0], arr[1])}
     get xy():[number, number] {return [this.x, this.y]}
     add(b: Vec2) {return new Vec2(this.x+b.x, this.y+b.y)}
     sub(b: Vec2) {return new Vec2(this.x-b.x, this.y-b.y)}
@@ -36,6 +37,8 @@ export class Vec3 {
         let vertical = new Vec2(0, this.y)
         return flat.add(vertical)
     }
+    get xyz(): [number, number, number] {return [this.x, this.y, this.z]}
+    static list(arr: [number, number, number]):Vec3 {return new Vec3(arr[0], arr[1], arr[2])}
     add(b: Vec3) {return new Vec3(this.x+b.x, this.y+b.y, this.z+b.z)}
     sub(b: Vec3) {return new Vec3(this.x-b.x, this.y-b.y, this.z-b.z)}
     mul(s: number) {return new Vec3(this.x*s, this.y*s, this.z*s)}

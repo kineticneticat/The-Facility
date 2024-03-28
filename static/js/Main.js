@@ -1,10 +1,15 @@
 import { devRenderGround } from "./Grid.js";
-import { Assets, Failed, HandlersLoaded, ImageHandler, TargetHandlers } from "./Handlers.js";
+import { Assets, Failed, HandlersLoaded, TargetHandlers } from "./Handlers.js";
 import { Move } from "./Player.js";
-// import { Tile, Tiles } from "./Tile.js"
+import { Vec3 } from "./Maths.js";
+import { Room } from "./Room.js";
+import { Tile } from "./Tile.js";
+export let Ready = () => HandlersLoaded == TargetHandlers;
 export let canvas = document.getElementById("canvas");
 export let ctx = canvas.getContext("2d");
 let first = false;
+let dev_room;
+let devGroundTile;
 export let canvasSize = {
     width: window.innerWidth,
     height: window.innerHeight
@@ -17,7 +22,8 @@ window.onload = () => {
 function init() {
     ctx.imageSmoothingEnabled = false;
     // init handlers from here
-    let img1 = new ImageHandler("static/img/tiles/dev_ground.png");
+    dev_room = new Room("dev");
+    devGroundTile = new Tile("dev_ground");
     loop();
 }
 function loop() {
@@ -28,6 +34,8 @@ function loop() {
     if (!first && (HandlersLoaded == TargetHandlers) && !Failed) {
         // triggers once after handlers loaded
         console.info("Handlers Loaded");
+        console.log(dev_room.roomLayout);
+        console.log(dev_room.subset(new Vec3(1, 0, 0)));
         first = true;
         console.log(Assets);
     }

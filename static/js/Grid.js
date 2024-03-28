@@ -1,43 +1,44 @@
-// import { Room } from "./Room.js";
+import { gridDim } from "./Const.js";
 import { Vec3 } from "./Maths.js";
 export function devRenderGround(ctx) {
-    let list = [...Array(8).keys()];
+    let list = [...Array(gridDim).keys()];
     for (const x of list) {
         for (const z of list) {
             let pos = new Vec3(x, 0, z);
             let screen = pos.screen;
             // ctx.fillStyle = (x==0 && y==0)? "rgb(255, 255, 255)" : "rgb(219, 57, 24)"
-            ctx.fillStyle = `rgb(${x / 8 * 255}, ${z / 8 * 255}, 0)`;
+            ctx.fillStyle = `rgb(${x / gridDim * 255}, ${z / gridDim * 255}, 0)`;
             ctx.beginPath();
             ctx.arc(screen.x, screen.y, 5, 0, Math.PI * 2);
             ctx.fill();
         }
     }
 }
-// export function devRenderTileOutline(ctx:CanvasRenderingContext2D, tile:Tile, pos:Vec3) {
-//     ctx.strokeStyle = "rgb(219, 57, 24)"
-//     ctx.beginPath()
-//     let a = (x: Vec3) => x.screen.xy
-//     ctx.moveTo(...a(pos))
-//     ctx.lineTo(...a(pos.add(new Vec3(1, 0, 0))))
-//     ctx.lineTo(...a(pos.add(new Vec3(1, 1, 0))))
-//     ctx.lineTo(...a(pos.add(new Vec3(0, 1, 0))))
-//     ctx.lineTo(...a(pos.add(new Vec3(0, 0, 0))))
-//     ctx.moveTo(...a(pos.add(new Vec3(0, 0, 0))))
-//     ctx.lineTo(...a(pos.add(new Vec3(0, 0, tile.shape.nn))))
-//     ctx.moveTo(...a(pos.add(new Vec3(0, 1, 0))))
-//     ctx.lineTo(...a(pos.add(new Vec3(0, 1, tile.shape.np))))
-//     ctx.moveTo(...a(pos.add(new Vec3(1, 0, 0))))
-//     ctx.lineTo(...a(pos.add(new Vec3(1, 0, tile.shape.pn))))
-//     ctx.moveTo(...a(pos.add(new Vec3(1, 1, 0))))
-//     ctx.lineTo(...a(pos.add(new Vec3(1, 1, tile.shape.pp))))
-//     ctx.moveTo(...a(pos.add(new Vec3(0, 0, tile.shape.nn))))
-//     ctx.lineTo(...a(pos.add(new Vec3(0, 1, tile.shape.np))))
-//     ctx.lineTo(...a(pos.add(new Vec3(1, 1, tile.shape.pp))))
-//     ctx.lineTo(...a(pos.add(new Vec3(1, 0, tile.shape.pn))))
-//     ctx.lineTo(...a(pos.add(new Vec3(0, 0, tile.shape.nn))))
-//     ctx.stroke()
-// }
-// export function devRenderRoom(room: Room) {
-// }
+export function devRenderTileOutline(ctx, tile, pos) {
+    ctx.strokeStyle = "rgb(219, 57, 24)";
+    ctx.beginPath();
+    let a = (x) => x.screen.xy;
+    let zeroCorner = pos.sub(new Vec3(.5, .5, .5));
+    ctx.moveTo(...a(zeroCorner.add(tile.corners("000"))));
+    ctx.lineTo(...a(zeroCorner.add(tile.corners("100"))));
+    ctx.lineTo(...a(zeroCorner.add(tile.corners("101"))));
+    ctx.lineTo(...a(zeroCorner.add(tile.corners("001"))));
+    ctx.lineTo(...a(zeroCorner.add(tile.corners("000"))));
+    ctx.moveTo(...a(zeroCorner.add(tile.corners("010"))));
+    ctx.lineTo(...a(zeroCorner.add(tile.corners("110"))));
+    ctx.lineTo(...a(zeroCorner.add(tile.corners("111"))));
+    ctx.lineTo(...a(zeroCorner.add(tile.corners("011"))));
+    ctx.lineTo(...a(zeroCorner.add(tile.corners("010"))));
+    ctx.moveTo(...a(zeroCorner.add(tile.corners("000"))));
+    ctx.lineTo(...a(zeroCorner.add(tile.corners("010"))));
+    ctx.moveTo(...a(zeroCorner.add(tile.corners("100"))));
+    ctx.lineTo(...a(zeroCorner.add(tile.corners("110"))));
+    ctx.moveTo(...a(zeroCorner.add(tile.corners("101"))));
+    ctx.lineTo(...a(zeroCorner.add(tile.corners("111"))));
+    ctx.moveTo(...a(zeroCorner.add(tile.corners("001"))));
+    ctx.lineTo(...a(zeroCorner.add(tile.corners("011"))));
+    ctx.stroke();
+}
+export function devRenderRoom(room) {
+}
 //# sourceMappingURL=Grid.js.map

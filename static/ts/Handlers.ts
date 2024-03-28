@@ -1,3 +1,5 @@
+import { IAsset, IAssetMap, RoomJSONData, TileJSONData } from "./Const.js"
+
 /**how many handlers should be loaded */
 export let TargetHandlers = 0
 /**how many handlers are loaded*/
@@ -5,41 +7,41 @@ export let HandlersLoaded = 0
 /** if a handler has failed */
 export let Failed = false
 /** stores assets for use */
-export let Assets: (Asset)[] = []
-
-export type AssetIndex = number
-interface Asset {
-    file: string,
-    data: any
-}
+export let Assets: IAssetMap = {}
 
 /** basic handler */
 abstract class Handler<HandlerDataType> {
     data: HandlerDataType
-    assetIndex : AssetIndex
+    assetName: string
     fileName: string
     firstLoad: Boolean
-    constructor(fn:string) {
+    constructor(fn:string, name:string) {
         if (!this.verifyFilename(fn)) {
             throw TypeError(`File ${fn} is not valid for this Handler}`)
-            return
         }
         this.firstLoad = true
         this.fileName = fn
+        this.assetName = name
         this.data = this.blankData()
-        this.assetIndex = -1
 
         // make sure asset hasnt already been loaded
-        for (const idx in Assets) {
-            let asset = Assets[parseInt(idx)]
+        for (const k of Object.keys(Assets)) {
+            let asset = Assets[k]
             if (asset.file == fn) {
                 this.firstLoad = false
                 this.data = asset.data
-                this.assetIndex = parseInt(idx)
                 return 
             }
         }
+
         //if first load; do normal stuff
+        Assets[this.assetName] = ({
+            "loaded": false,
+            "file": this.fileName,
+            "name": this.assetName,
+            "data": undefined
+        } as IAsset)
+
         
         TargetHandlers += 1
         this.getData()
@@ -48,10 +50,8 @@ abstract class Handler<HandlerDataType> {
     /**call once asset loaded */
     defaultCallback(data:HandlerDataType): void {
         HandlersLoaded += 1
-        this.assetIndex = Assets.push({
-            "file": this.fileName,
-            "data": data
-        } as Asset)-1 as AssetIndex
+        Assets[this.assetName].loaded = true
+        Assets[this.assetName].data = data
 
         this.customCallback(data)
     }
@@ -72,7 +72,7 @@ abstract class Handler<HandlerDataType> {
 /** for loading Generic JSON */
 export class JSONHandler<JSONType> extends Handler<JSONType> {
     
-    constructor(fileName:string) { super(fileName) }
+    constructor(fileName:string, name:string) { super(fileName, name) }
     blankData():JSONType {
         return {} as JSONType
     }
@@ -105,33 +105,12 @@ export class JSONHandler<JSONType> extends Handler<JSONType> {
     }
 }
 
-export interface RoomJSONData {
-    "layout": [[string]]
-}
 export let RoomHandler = JSONHandler<RoomJSONData>
 
-export interface TileJSONData {
-    "name": string,
-    "corners": {
-        "000": [number, number, number],
-        "100": [number, number, number],
-        "001": [number, number, number],
-        "010": [number, number, number],
-        "101": [number, number, number],
-        "110": [number, number, number],
-        "011": [number, number, number],
-        "111": [number, number, number]
-    },
-    "texture": string
-}
 export let TileHandler = JSONHandler<TileJSONData>
 
-export interface ImageData {
-    img: HTMLImageElement
-}
-
 export class ImageHandler extends Handler<HTMLImageElement> {
-    constructor(fn:string) { super(fn) }
+    constructor(fn:string, name:string) { super(fn, name) }
     blankData(): HTMLImageElement {
         return new Image()
     }

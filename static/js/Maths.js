@@ -7,6 +7,7 @@ export class Vec2 {
         this.x = x;
         this.y = y;
     }
+    static list(arr) { return new Vec2(arr[0], arr[1]); }
     get xy() { return [this.x, this.y]; }
     add(b) { return new Vec2(this.x + b.x, this.y + b.y); }
     sub(b) { return new Vec2(this.x - b.x, this.y - b.y); }
@@ -33,6 +34,8 @@ export class Vec3 {
         let vertical = new Vec2(0, this.y);
         return flat.add(vertical);
     }
+    get xyz() { return [this.x, this.y, this.z]; }
+    static list(arr) { return new Vec3(arr[0], arr[1], arr[2]); }
     add(b) { return new Vec3(this.x + b.x, this.y + b.y, this.z + b.z); }
     sub(b) { return new Vec3(this.x - b.x, this.y - b.y, this.z - b.z); }
     mul(s) { return new Vec3(this.x * s, this.y * s, this.z * s); }
