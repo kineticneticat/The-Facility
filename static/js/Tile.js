@@ -1,12 +1,14 @@
 import { Assets, ImageHandler, TileHandler } from "./Handlers.js";
 import { Ready } from "./Main.js";
 import { Vec3 } from "./Maths.js";
+export let TileRegistry = {};
 export class Tile {
     name;
     constructor(name) {
         this.name = name;
         new TileHandler(`static/json/tile/${this.name}.tile.json`, this.tileDataAssetName);
         new ImageHandler(`static/img/tile/${this.name}.tile.png`, this.tileImgAssetName);
+        TileRegistry[this.name] = this;
     }
     get tileDataAssetName() { return `${this.name}.tile.data`; }
     get tileImgAssetName() { return `${this.name}.tile.img`; }

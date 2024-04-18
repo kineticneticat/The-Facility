@@ -1,4 +1,5 @@
 import { canvasSize } from "./Main.js";
+const Maths = Math;
 /** for screen coords */
 export class Vec2 {
     x;
@@ -9,11 +10,15 @@ export class Vec2 {
     }
     static list(arr) { return new Vec2(arr[0], arr[1]); }
     get xy() { return [this.x, this.y]; }
-    add(b) { return new Vec2(this.x + b.x, this.y + b.y); }
-    sub(b) { return new Vec2(this.x - b.x, this.y - b.y); }
+    get len() { return Maths.sqrt(this.x ** 2 + this.y ** 2); }
+    map(lambda) { return new Vec2(lambda(this.x), lambda(this.y)); }
+    thing(b, lambda) { return (b instanceof Vec2) ? new Vec2(lambda(this.x, b.x), lambda(this.y, b.y)) : this.thing(Vec2.list(b), lambda); }
+    add(b) { return this.thing(b, (x, y) => { return x + y; }); }
+    sub(b) { return this.thing(b, (x, y) => { return x - y; }); }
+    hadm(b) { return this.thing(b, (x, y) => { return x * y; }); }
+    hadd(b) { return this.thing(b, (x, y) => { return x / y; }); }
     mul(s) { return new Vec2(this.x * s, this.y * s); }
     div(s) { return new Vec2(this.x / s, this.y / s); }
-    had(b) { return new Vec2(this.x * b.x, this.y * b.y); }
     get round() { return new Vec2(Math.round(this.x), Math.round(this.y)); }
 }
 /** for world coords */
@@ -36,21 +41,27 @@ export class Vec3 {
     }
     get xyz() { return [this.x, this.y, this.z]; }
     static list(arr) { return new Vec3(arr[0], arr[1], arr[2]); }
-    add(b) { return new Vec3(this.x + b.x, this.y + b.y, this.z + b.z); }
-    sub(b) { return new Vec3(this.x - b.x, this.y - b.y, this.z - b.z); }
+    map(lambda) { return new Vec3(lambda(this.x), lambda(this.y), lambda(this.z)); }
+    round(places) { return this.map((x) => Maths.floor(x * (10 ** places)) / (10 ** places)); }
+    truncate(places) { return this.map((x) => ((x * (10 ** places)) - (x * (10 ** places) % 1)) / (10 ** places)); }
+    get len() { return Maths.sqrt(this.x ** 2 + this.y ** 2 + this.z ** 2); }
+    thing(b, lambda) { return (b instanceof Vec3) ? new Vec3(lambda(this.x, b.x), lambda(this.y, b.y), lambda(this.z, b.z)) : this.thing(Vec3.list(b), lambda); }
+    add(b) { return this.thing(b, (x, y) => { return x + y; }); }
+    sub(b) { return this.thing(b, (x, y) => { return x - y; }); }
+    hadm(b) { return this.thing(b, (x, y) => { return x * y; }); }
+    hadd(b) { return this.thing(b, (x, y) => { return x / y; }); }
     mul(s) { return new Vec3(this.x * s, this.y * s, this.z * s); }
     div(s) { return new Vec3(this.x / s, this.y / s, this.z / s); }
-    had(b) { return new Vec3(this.x * b.x, this.y * b.y, this.z * b.z); }
     /** transforms an easy to use vector to a renderable one
      *  i.e world gets moved and scaled to centre of screen
     */
     get screen() {
         return this.iso
-            .add(new Vec2(0, -3.5))
+            .add([0, -3.5])
             .div(3.5)
-            .had(new Vec2(1, -1))
+            .hadm([1, -1])
             .mul(canvasSize.height / 2.75)
-            .add(new Vec2(canvasSize.width / 2, canvasSize.height / 2));
+            .add([canvasSize.width / 2, canvasSize.height / 2]);
     }
 }
 //# sourceMappingURL=Maths.js.map

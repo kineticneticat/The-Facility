@@ -1,5 +1,8 @@
 import { canvasSize } from "./Main.js"
 
+const Maths = Math
+
+
 /** for screen coords */
 export class Vec2 {
     x: number
@@ -10,11 +13,16 @@ export class Vec2 {
     }
     static list(arr:[number, number]):Vec2 {return new Vec2(arr[0], arr[1])}
     get xy():[number, number] {return [this.x, this.y]}
-    add(b: Vec2) {return new Vec2(this.x+b.x, this.y+b.y)}
-    sub(b: Vec2) {return new Vec2(this.x-b.x, this.y-b.y)}
+    get len() {return Maths.sqrt(this.x**2 + this.y**2)}
+    map(lambda: (x:number) => number) { return new Vec2(lambda(this.x), lambda(this.y)) }
+    thing(b: Vec2|[number,number], lambda: (x:number,y:number)=>number): Vec2
+    {return (b instanceof Vec2) ? new Vec2(lambda(this.x,b.x), lambda(this.y,b.y)) : this.thing(Vec2.list(b), lambda)}
+    add(b: Vec2|[number,number]) {return this.thing(b, (x:number,y:number)=>{return x+y})}
+    sub(b: Vec2|[number,number]) {return this.thing(b, (x:number,y:number)=>{return x-y})}
+    hadm(b: Vec2|[number,number]) {return this.thing(b, (x:number,y:number)=>{return x*y})}
+    hadd(b: Vec2|[number,number]) {return this.thing(b, (x:number,y:number)=>{return x/y})}
     mul(s: number) {return new Vec2(this.x*s, this.y*s)}
     div(s: number) {return new Vec2(this.x/s, this.y/s)}
-    had(b: Vec2) {return new Vec2(this.x*b.x, this.y*b.y)}
     get round() { return new Vec2(Math.round(this.x), Math.round(this.y))}
 
 }
@@ -39,21 +47,33 @@ export class Vec3 {
     }
     get xyz(): [number, number, number] {return [this.x, this.y, this.z]}
     static list(arr: [number, number, number]):Vec3 {return new Vec3(arr[0], arr[1], arr[2])}
-    add(b: Vec3) {return new Vec3(this.x+b.x, this.y+b.y, this.z+b.z)}
-    sub(b: Vec3) {return new Vec3(this.x-b.x, this.y-b.y, this.z-b.z)}
+    map(lambda: (x:number) => number) { return new Vec3(lambda(this.x), lambda(this.y), lambda(this.z)) }
+
+    round(places:number) {return this.map((x:number) => Maths.floor(x*(10**places))/(10**places))}
+    truncate(places:number) {return this.map((x:number) => ((x*(10**places))-(x*(10**places)%1))/(10**places))}
+    get len() {return Maths.sqrt(this.x**2 + this.y**2 + this.z**2)}
+
+    thing(b: Vec3|[number,number,number], lambda: (x:number,y:number)=>number): Vec3
+    {return (b instanceof Vec3) ? new Vec3(lambda(this.x,b.x), lambda(this.y,b.y), lambda(this.z,b.z)) : this.thing(Vec3.list(b), lambda)}
+
+    add(b: Vec3|[number,number,number]) {return this.thing(b, (x:number,y:number)=>{return x+y})}
+    sub(b: Vec3|[number,number,number]) {return this.thing(b, (x:number,y:number)=>{return x-y})}
+    hadm(b: Vec3|[number,number,number]) {return this.thing(b, (x:number,y:number)=>{return x*y})}
+    hadd(b: Vec3|[number,number,number]) {return this.thing(b, (x:number,y:number)=>{return x/y})}
+
     mul(s: number) {return new Vec3(this.x*s, this.y*s, this.z*s)}
     div(s: number) {return new Vec3(this.x/s, this.y/s, this.z/s)}
-    had(b: Vec3) {return new Vec3(this.x*b.x, this.y*b.y, this.z*b.z)}
+
 
     /** transforms an easy to use vector to a renderable one
      *  i.e world gets moved and scaled to centre of screen
     */
     get screen():Vec2 {
         return this.iso
-            .add(new Vec2(0, -3.5))
+            .add([0, -3.5])
             .div(3.5)
-            .had(new Vec2(1,-1))
+            .hadm([1,-1])
             .mul(canvasSize.height/2.75)
-            .add(new Vec2(canvasSize.width/2, canvasSize.height/2))
+            .add([canvasSize.width/2, canvasSize.height/2])
     }
 }

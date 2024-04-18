@@ -1,5 +1,5 @@
 {
-    "name": "dev_ground.tile",
+    "name": "dwayne.tile",
     "corners": {
         "000": [0,0,0],
         "100": [1,0,0],
@@ -10,5 +10,5 @@
         "011": [0,1,1],
         "111": [1,1,1]
     },
-    "texture": "tiles/dev_ground.png"
+    "texture": "tiles/dwayne.png"
 }

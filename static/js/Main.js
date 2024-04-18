@@ -1,15 +1,21 @@
-import { devRenderGround } from "./Grid.js";
-import { Assets, Failed, HandlersLoaded, TargetHandlers } from "./Handlers.js";
-import { Move } from "./Player.js";
-import { Vec3 } from "./Maths.js";
+import { renderRoom } from "./Grid.js";
+import { Failed, Queue, AnimHandler } from "./Handlers.js";
+import { Move, playerPos } from "./Player.js";
 import { Room } from "./Room.js";
 import { Tile } from "./Tile.js";
-export let Ready = () => HandlersLoaded == TargetHandlers;
+// check if all handlers are loaded
+export let Ready = () => { for (const ele in Queue) {
+    if (!Queue[ele].done) {
+        return false;
+    }
+} ; return true; };
 export let canvas = document.getElementById("canvas");
 export let ctx = canvas.getContext("2d");
-let first = false;
+let first = true;
 let dev_room;
 let devGroundTile;
+let dwayne;
+let testAnim;
 export let canvasSize = {
     width: window.innerWidth,
     height: window.innerHeight
@@ -24,35 +30,40 @@ function init() {
     // init handlers from here
     dev_room = new Room("dev");
     devGroundTile = new Tile("dev_ground");
+    dwayne = new Tile("dwayne");
+    testAnim = new AnimHandler("dev");
     loop();
 }
 function loop() {
-    if (!Failed && (HandlersLoaded != TargetHandlers)) {
+    if (!Failed && !Ready()) {
         // not all handlers loaded so skip frame
         console.info("Handlers Not Loaded");
     }
-    if (!first && (HandlersLoaded == TargetHandlers) && !Failed) {
+    if (first && Ready() && !Failed) {
         // triggers once after handlers loaded
         console.info("Handlers Loaded");
-        console.log(dev_room.roomLayout);
-        console.log(dev_room.subset(new Vec3(1, 0, 0)));
-        first = true;
-        console.log(Assets);
+        first = false;
+        // console.log(Assets)
+        // console.log(TileRegistry)
+        console.log(testAnim);
     }
     if (Failed) {
         console.error("Handler Failed");
         return;
     }
-    if (HandlersLoaded == TargetHandlers && !Failed) {
+    if (Ready() && !Failed && !first) {
         // all handlers loaded
+        // debugger
         Draw();
-        // console.log(key)
+        // console.log(playerPos)
         Move();
     }
     requestAnimationFrame(loop);
 }
 function Draw() {
     ctx.clearRect(0, 0, canvasSize.width, canvasSize.height);
-    devRenderGround(ctx);
+    renderRoom(ctx, dev_room, playerPos);
+    // devRenderRoom(ctx, dev_room, playerPos)
+    // devRenderGround(ctx)
 }
 //# sourceMappingURL=Main.js.map

@@ -1,7 +1,9 @@
-import { Corners, TileJSONData } from "./Const.js";
+import { Corners, SimpleMap, TileJSONData } from "./Const.js";
 import { Assets, ImageHandler, TileHandler } from "./Handlers.js";
 import { Ready } from "./Main.js";
 import { Vec3 } from "./Maths.js";
+
+export let TileRegistry:SimpleMap<Tile> = {}
 
 export class Tile {
     name: string
@@ -9,7 +11,9 @@ export class Tile {
         this.name = name
         new TileHandler(`static/json/tile/${this.name}.tile.json`, this.tileDataAssetName)
         new ImageHandler(`static/img/tile/${this.name}.tile.png`, this.tileImgAssetName)
+        TileRegistry[this.name] = this
     }
+
     get tileDataAssetName() { return `${this.name}.tile.data` }
     get tileImgAssetName() { return `${this.name}.tile.img` }
 
