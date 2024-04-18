@@ -116,7 +116,7 @@ export class ImageHandler extends Handler {
     }
 }
 let dataCanvas = document.getElementById("datacanvas");
-let dataCtx = dataCanvas.getContext("2d");
+let dataCtx = dataCanvas.getContext("2d", { willReadFrequently: true });
 /** doesnt really follow the other handlers, but it literally handles animations
  so it would be dumb to call it something else */
 export class AnimHandler {
@@ -162,9 +162,11 @@ export class AnimHandler {
     }
     /** returns the specified frame
      * @param {number} u which frame row in the sheet
-     * @param v which frame in the row
+     * @param {number} v which frame in the row
     */
-    frame(u, v) {
+    frameImg(id, t) {
+        let pos = this.meta[id].framePos.add([this.meta[id].frameSize.x * (t % this.meta[id].frameCount), 0]);
+        return this.getImageData(...pos.add([0, 1]).xy, ...this.meta[id].frameSize.xy);
     }
 }
 //# sourceMappingURL=Handlers.js.map

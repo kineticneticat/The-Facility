@@ -12,6 +12,7 @@ export let Ready = () => { for (const ele in Queue) {
 export let canvas = document.getElementById("canvas");
 export let ctx = canvas.getContext("2d");
 let first = true;
+let time = 0;
 let dev_room;
 let devGroundTile;
 let dwayne;
@@ -56,7 +57,9 @@ function loop() {
         // debugger
         Draw();
         // console.log(playerPos)
+        ctx.putImageData(testAnim.frameImg(0, Math.round(time / 10)), 10, 10);
         Move();
+        time++;
     }
     requestAnimationFrame(loop);
 }

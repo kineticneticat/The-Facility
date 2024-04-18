@@ -139,7 +139,7 @@ export class ImageHandler extends Handler<HTMLImageElement> {
 
 }
 let dataCanvas: HTMLCanvasElement = document.getElementById("datacanvas") as HTMLCanvasElement
-let dataCtx: CanvasRenderingContext2D = dataCanvas.getContext("2d") as CanvasRenderingContext2D
+let dataCtx: CanvasRenderingContext2D = dataCanvas.getContext("2d", {willReadFrequently:true}) as CanvasRenderingContext2D
 type RowMetum = {
     framePos:Vec2,
     frameSize:Vec2,
@@ -187,9 +187,11 @@ export class AnimHandler {
     }
     /** returns the specified frame 
      * @param {number} u which frame row in the sheet
-     * @param v which frame in the row
+     * @param {number} v which frame in the row
     */
-    frame(u:number,v:number) {
-        
+    frameImg(id:number,t:number) {
+        let pos = this.meta[id].framePos.add([this.meta[id].frameSize.x*(t % this.meta[id].frameCount), 0])
+        return this.getImageData(...pos.add([0,1]).xy, ...this.meta[id].frameSize.xy)
     }
+    
 }

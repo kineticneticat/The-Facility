@@ -10,8 +10,9 @@ import { Queuer } from "./Const.js"
 export let Ready = ():boolean => {for (const ele in Queue) {if (!Queue[ele].done) {return false}}; return true}
 
 export let canvas = document.getElementById("canvas") as HTMLCanvasElement
-export let ctx = canvas.getContext("2d") as CanvasRenderingContext2D
+export let ctx = canvas.getContext("2d", ) as CanvasRenderingContext2D
 let first = true
+let time = 0
 
 let dev_room: Room
 let devGroundTile: Tile
@@ -70,9 +71,10 @@ function loop() {
 
         Draw()
         // console.log(playerPos)
+        ctx.putImageData(testAnim.frameImg(0, Math.round(time/10)), 10, 10)
 
         Move()
-        
+        time++
     }
     requestAnimationFrame(loop)
 }
