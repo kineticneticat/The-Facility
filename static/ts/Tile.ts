@@ -1,29 +1,42 @@
-import { Corners, SimpleMap, TileJSONData } from "./Const.js";
-import { Assets, ImageHandler, TileHandler } from "./Handlers.js";
-import { Ready } from "./Main.js";
+import { Asset, Corners, SimpleMap, TileJSONData } from "./Const.js";
+import { Assets, HandlerUser, ImageHandler, TileHandler } from "./Handlers.js";
+import { ready } from "./Main.js";
 import { Vec3 } from "./Maths.js";
 
-export let TileRegistry:SimpleMap<Tile> = {}
-
-export class Tile {
-    name: string
+export class Tile implements HandlerUser {
+    assetName: string
+    dataLoaded:boolean
+    imgLoaded:boolean
     constructor(name:string) {
-        this.name = name
-        new TileHandler(`static/json/tile/${this.name}.tile.json`, this.tileDataAssetName)
-        new ImageHandler(`static/img/tile/${this.name}.tile.png`, this.tileImgAssetName)
-        TileRegistry[this.name] = this
+        this.assetName = name
+        this.dataLoaded = false
+        this.imgLoaded = false
+        if (Object.keys(Assets).includes(this.assetName)) { return }
+        new ImageHandler(`static/img/tile/${this.assetName}.png`, this.imgAssetName, () => {this.imgLoaded = true; this.callback()})
+        new TileHandler(`static/json/tile/${this.assetName}.json`, this.dataAssetName, () => {this.dataLoaded = true; this.callback()})
+        Assets[this.assetName] = {
+            loaded: false,
+            data: this
+        } as Asset<Tile>
     }
 
-    get tileDataAssetName() { return `${this.name}.tile.data` }
-    get tileImgAssetName() { return `${this.name}.tile.img` }
+    callback() {
+        if (!(this.dataLoaded && this.imgLoaded)) { return }
 
-    get tileDataAsset() { if (Ready()) {return Assets[this.tileDataAssetName]} else {throw Error(`Handlers not loaded (${this.tileDataAssetName})`)}}
-    get tileImgAsset() { if (Ready()) {return Assets[this.tileImgAssetName]} else {throw Error(`Handlers not loaded (${this.tileImgAssetName})`)}}
 
-    get tileData(): TileJSONData {return this.tileDataAsset.data as TileJSONData}
-    get tileImg(): HTMLImageElement {return this.tileImgAsset.data as HTMLImageElement}
+        Assets[this.assetName].loaded = true
+    }
+
+    get dataAssetName() { return `${this.assetName}.data` }
+    get imgAssetName() { return `${this.assetName}.img` }
+
+    get dataAsset() { return Assets[this.dataAssetName] }
+    get imgAsset() { return Assets[this.imgAssetName] }
+
+    get data(): TileJSONData {return this.dataAsset.data as TileJSONData}
+    get img(): HTMLImageElement {return this.imgAsset.data as HTMLImageElement}
 
     corners(corner:Corners) {
-        return Vec3.list(this.tileData.corners[corner])
+        return Vec3.list(this.data.corners[corner])
     }
 }

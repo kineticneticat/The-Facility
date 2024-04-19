@@ -1,33 +1,37 @@
 import { Assets, ImageHandler, TileHandler } from "./Handlers.js";
-import { Ready } from "./Main.js";
 import { Vec3 } from "./Maths.js";
-export let TileRegistry = {};
 export class Tile {
-    name;
+    assetName;
+    dataLoaded;
+    imgLoaded;
     constructor(name) {
-        this.name = name;
-        new TileHandler(`static/json/tile/${this.name}.tile.json`, this.tileDataAssetName);
-        new ImageHandler(`static/img/tile/${this.name}.tile.png`, this.tileImgAssetName);
-        TileRegistry[this.name] = this;
+        this.assetName = name;
+        this.dataLoaded = false;
+        this.imgLoaded = false;
+        if (Object.keys(Assets).includes(this.assetName)) {
+            return;
+        }
+        new ImageHandler(`static/img/tile/${this.assetName}.png`, this.imgAssetName, () => { this.imgLoaded = true; this.callback(); });
+        new TileHandler(`static/json/tile/${this.assetName}.json`, this.dataAssetName, () => { this.dataLoaded = true; this.callback(); });
+        Assets[this.assetName] = {
+            loaded: false,
+            data: this
+        };
     }
-    get tileDataAssetName() { return `${this.name}.tile.data`; }
-    get tileImgAssetName() { return `${this.name}.tile.img`; }
-    get tileDataAsset() { if (Ready()) {
-        return Assets[this.tileDataAssetName];
+    callback() {
+        if (!(this.dataLoaded && this.imgLoaded)) {
+            return;
+        }
+        Assets[this.assetName].loaded = true;
     }
-    else {
-        throw Error(`Handlers not loaded (${this.tileDataAssetName})`);
-    } }
-    get tileImgAsset() { if (Ready()) {
-        return Assets[this.tileImgAssetName];
-    }
-    else {
-        throw Error(`Handlers not loaded (${this.tileImgAssetName})`);
-    } }
-    get tileData() { return this.tileDataAsset.data; }
-    get tileImg() { return this.tileImgAsset.data; }
+    get dataAssetName() { return `${this.assetName}.data`; }
+    get imgAssetName() { return `${this.assetName}.img`; }
+    get dataAsset() { return Assets[this.dataAssetName]; }
+    get imgAsset() { return Assets[this.imgAssetName]; }
+    get data() { return this.dataAsset.data; }
+    get img() { return this.imgAsset.data; }
     corners(corner) {
-        return Vec3.list(this.tileData.corners[corner]);
+        return Vec3.list(this.data.corners[corner]);
     }
 }
 //# sourceMappingURL=Tile.js.map

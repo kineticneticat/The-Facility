@@ -1,6 +1,7 @@
 import { dt, walkSpeed } from "./Const.js";
 import { Vec3 } from "./Maths.js";
 export let playerPos = new Vec3(0, 0, 0);
+export let currentChar = "dev.char";
 export function Move() {
     let deltaPos = new Vec3(0, 0, 0);
     deltaPos = key.Forwards ? deltaPos.add(UnitDirections.FORWARDS.mul(walkSpeed)) : deltaPos;
@@ -10,6 +11,8 @@ export function Move() {
     deltaPos = key.Up ? deltaPos.add(UnitDirections.UP.mul(walkSpeed)) : deltaPos;
     deltaPos = key.Down ? deltaPos.add(UnitDirections.DOWN.mul(walkSpeed)) : deltaPos;
     playerPos = playerPos.add(deltaPos.mul(dt));
+}
+export function DrawPlayer(ctx) {
 }
 var keyCodes;
 (function (keyCodes) {

@@ -1,20 +1,37 @@
-import { RoomJSONData, RoomSubset, blankSubset, blankSubsetLayer, gridDim, tripleLoop } from "./Const.js";
-import { Assets, RoomHandler } from "./Handlers.js";
-import { Ready } from "./Main.js";
+import { Asset, RoomJSONData, RoomSubset, blankSubset, blankSubsetLayer, gridDim, tripleLoop } from "./Const.js";
+import { Assets, HandlerUser, RoomHandler } from "./Handlers.js";
+import { ready } from "./Main.js";
 import { Vec3 } from "./Maths.js"
+import { Tile } from "./Tile.js";
 
-export class Room {
-    name: string
+export class Room implements HandlerUser {
+    assetName: string
     constructor(name:string) {
-        this.name = name
-        new RoomHandler(`static/json/room/${this.name}.room.json`, `${this.name}.room.data`)
+        this.assetName = name
+        if (Object.keys(Assets).includes(this.assetName)) {return}
+        new RoomHandler(`static/json/room/${this.assetName}.json`, `${this.assetName}.data`, () => {this.callback()})
+        Assets[this.assetName] = {
+            loaded:false,
+            data: this
+        } as Asset<Room>
     }
 
-    get roomDataAssetName() { return `${this.name}.room.data` }
-    get roomDataAsset() { if (Ready()) {return Assets[this.roomDataAssetName]} else {throw Error(`Handlers not loaded (${this.roomDataAssetName})`)}}
-    get roomData() { return this.roomDataAsset.data as RoomJSONData}
-    get groundLevel() { return this.roomData.groundLevel }
-    get roomLayout() { return this.roomData.layout }
+    get dataAssetName() { return `${this.assetName}.data` }
+    get dataAsset() { return Assets[this.dataAssetName] as Asset<RoomJSONData>}
+    get data() { return this.dataAsset.data}
+    get groundLevel() { return this.data.groundLevel }
+    get layout() { return this.data.layout }
+
+    callback() {
+        this.loadTiles()
+
+        Assets[this.assetName].loaded = true
+    }
+    loadTiles() {
+        tripleLoop<string, void>(this.layout, (y, x, z, ele) => {
+            if (ele) { new Tile(ele) }
+        })
+    }
 
     // why is this so fucking hard
     subset(centreBottom:Vec3) {
@@ -25,7 +42,7 @@ export class Room {
         let roundBottom = centreBottom.round(0)
         let zerozerocorner = roundBottom.sub([2, 5, 2])
         let maxmaxcorner = zerozerocorner.add([4, 9, 4])
-        tripleLoop<string, void>(this.roomLayout, (y, x, z, ele) => {
+        tripleLoop<string, void>(this.layout, (y, x, z, ele) => {
             const rel = (new Vec3(x, y, z)).sub(zerozerocorner)
             if (   (zerozerocorner.y <= y)
                 && (y <= maxmaxcorner.y)
@@ -35,10 +52,10 @@ export class Room {
                 && (z <= maxmaxcorner.z) ) {
                 
                 subset[rel.y][rel.x][rel.z] = 
-                y < 0 || y > this.roomLayout.length ? "" :
-                x < 0 || x > this.roomLayout[0].length ? "" :
-                z < 0 || z > this.roomLayout[0][0].length ? "" :
-                this.roomLayout[y][x][z]
+                y < 0 || y > this.layout.length ? "" :
+                x < 0 || x > this.layout[0].length ? "" :
+                z < 0 || z > this.layout[0][0].length ? "" :
+                this.layout[y][x][z]
                 
             }
         })

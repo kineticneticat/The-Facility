@@ -2,6 +2,8 @@ import { dt, walkSpeed } from "./Const.js";
 import { Vec3 } from "./Maths.js";
 
 export let playerPos = new Vec3(0, 0,0)
+export let currentChar = "dev.char"
+
 
 export function Move() {
     let deltaPos = new Vec3(0,0,0)
@@ -15,6 +17,10 @@ export function Move() {
 
 
 	playerPos = playerPos.add(deltaPos.mul(dt))
+}
+
+export function DrawPlayer(ctx:CanvasRenderingContext2D) {
+
 }
 
 enum keyCodes {

@@ -1,13 +1,7 @@
 export type Asset<T> = {
     loaded: boolean,
-    file: string,
+    file?: string
     data: T
-}
-export type Queuer = {
-    name: string,
-    done:boolean,
-    status:string,
-    failed:boolean
 }
 export type SimpleMap<V> = {
     [key:string]:V

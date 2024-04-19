@@ -1,25 +1,28 @@
 import { gridDim, tripleLoop } from "./Const.js";
+import { Assets } from "./Handlers.js";
 import { Vec3, Vec2 } from "./Maths.js";
-import { TileRegistry } from "./Tile.js";
 export function renderTile(ctx, tile, pos) {
-    let imgSize = new Vec2(tile.tileImg.width, tile.tileImg.height);
+    let imgSize = new Vec2(tile.img.width, tile.img.height);
     let width = new Vec3(1, 0, 0).screen.sub(new Vec3(0, 0, 1).screen).len;
-    let factor = width / tile.tileImg.width;
+    let factor = width / tile.img.width;
     let scaledsize = imgSize.mul(factor);
-    ctx.drawImage(tile.tileImg, ...pos.screen.sub(scaledsize.div(2)).xy, ...scaledsize.xy);
+    ctx.drawImage(tile.img, ...pos.screen.sub(scaledsize.div(2)).xy, ...scaledsize.xy);
 }
 export function renderRoom(ctx, room, pos) {
     let subset = room.subset(pos);
     tripleLoop(subset, (y, x, z, ele) => {
         let tileName = subset[y][4 - x][4 - z];
-        let tile = TileRegistry[tileName];
+        if (!tileName) {
+            return;
+        }
+        let tile = Assets[tileName].data;
         // catch non-existent Tiles
-        if (!tile && tileName) {
-            console.log(TileRegistry);
-            throw Error(`Tile "${tileName}" in "${room.name}" does not exist`);
+        if (!tile) {
+            console.log(Assets);
+            throw Error(`Tile "${tileName}" in "${room.assetName}" does not exist`);
         }
         if (tile) {
-            renderTile(ctx, tile, new Vec3(4 - x, y - 2, 4 - z));
+            renderTile(ctx, tile, new Vec3(4 - x, y - 5, 4 - z));
         }
     });
 }
@@ -67,13 +70,16 @@ export function devRenderRoom(ctx, room, pos) {
     let subset = room.subset(pos);
     tripleLoop(subset, (y, x, z, ele) => {
         let tileName = ele;
-        let tile = TileRegistry[tileName];
+        if (!tileName) {
+            return;
+        }
+        let tile = Assets[tileName].data;
         // catch non-existent Tiles
-        if (!tile && tileName) {
-            throw Error(`Tile "${tileName}" in "${room.name}" does not exist`);
+        if (!tile) {
+            throw Error(`Tile "${tileName}" in "${room.assetName}" does not exist`);
         }
         if (tile) {
-            devRenderTileOutline(ctx, tile, new Vec3(x, y - 4, z));
+            devRenderTileOutline(ctx, tile, new Vec3(x, y - 7, z));
         }
     });
 }
