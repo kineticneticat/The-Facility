@@ -9,6 +9,7 @@ export class Vec2 {
         this.y = y;
     }
     static list(arr) { return new Vec2(arr[0], arr[1]); }
+    static fromImgData(img) { return new Vec2(img.width, img.height); }
     get xy() { return [this.x, this.y]; }
     get len() { return Maths.sqrt(this.x ** 2 + this.y ** 2); }
     map(lambda) { return new Vec2(lambda(this.x), lambda(this.y)); }

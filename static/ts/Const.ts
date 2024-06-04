@@ -1,3 +1,5 @@
+import { Vec2 } from "./Maths"
+
 export type Asset<T> = {
     loaded: boolean,
     file?: string
@@ -61,15 +63,42 @@ export const blankSubset: RoomSubset = [
 export const dt = 0.01
 export const walkSpeed = 7
 
-export function tripleLoop<In, Out>(iterable: In[][][], callback:(i:number, j:number, k:number, element:In)=>Out):void {
+export function tripleLoop<In, Out>(iterable: In[][][], callback:(i:number, j:number, k:number, element:In)=>Out):Out[] {
+    let output: Out[] = []
     for (const i in iterable) {
         const I = parseInt(i)
         for (const j in iterable[I]) {
             const J = parseInt(j)
             for (const k in iterable[I][J]) {
                 const K = parseInt(k)
-                callback(I, J, K, iterable[I][J][K])
+                output.push(callback(I, J, K, iterable[I][J][K]))
             }
         }
     }
+    return output
+}
+export function doubleLoop<In, Out>(iterable: In[][], callback:(i:number, j:number, element:In)=>Out):Out[] {
+    let output: Out[] = []
+    for (const i in iterable) {
+        const I = parseInt(i)
+        for (const j in iterable[I]) {
+            const J = parseInt(j)
+            output.push(callback(I, J, iterable[I][J]))
+        }
+    }
+    return output
+}
+export let drawPos = {
+    CENTRE: (topleft:Vec2, size:Vec2) => {return topleft.sub(size.div(2))},
+    TOPLEFT: (topleft:Vec2, size:Vec2) => {return topleft}
+}
+export type callbackFunction = () => {}
+export function f(obj:string[]) { return Object.fromEntries(Object.entries(obj).map(([k, v]) => [v, k])) }
+
+export type Vec2List = [number, number]
+
+export type AnimData = {
+    offset: Vec2List,
+    meta: {topleft: Vec2List, size: Vec2List}[]
+    alias: {[name: string]: number}
 }

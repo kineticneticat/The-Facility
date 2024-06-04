@@ -3,19 +3,20 @@ import { Assets, RoomHandler } from "./Handlers.js";
 import { Vec3 } from "./Maths.js";
 import { Tile } from "./Tile.js";
 export class Room {
-    assetName;
+    name;
     constructor(name) {
-        this.assetName = name;
+        this.name = name;
         if (Object.keys(Assets).includes(this.assetName)) {
             return;
         }
-        new RoomHandler(`static/json/room/${this.assetName}.json`, `${this.assetName}.data`, () => { this.callback(); });
+        new RoomHandler(`static/json/room/${this.name}.json`, `${this.name},data.room`, () => { this.callback(); });
         Assets[this.assetName] = {
             loaded: false,
             data: this
         };
     }
-    get dataAssetName() { return `${this.assetName}.data`; }
+    get assetName() { return `${this.name},room`; }
+    get dataAssetName() { return `${this.name},data.room`; }
     get dataAsset() { return Assets[this.dataAssetName]; }
     get data() { return this.dataAsset.data; }
     get groundLevel() { return this.data.groundLevel; }

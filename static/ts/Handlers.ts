@@ -5,10 +5,6 @@ export let Failed = false
 /** stores assets for use */
 export let Assets: SimpleMap<Asset<any>> = {}
 
-export interface HandlerUser {
-    callback():void
-}
-
 /** basic handler */
 abstract class Handler<HandlerDataType> {
     data: HandlerDataType

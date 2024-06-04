@@ -1,22 +1,23 @@
 import { Asset, RoomJSONData, RoomSubset, blankSubset, blankSubsetLayer, gridDim, tripleLoop } from "./Const.js";
-import { Assets, HandlerUser, RoomHandler } from "./Handlers.js";
+import { Assets, RoomHandler } from "./Handlers.js";
 import { ready } from "./Main.js";
 import { Vec3 } from "./Maths.js"
 import { Tile } from "./Tile.js";
 
-export class Room implements HandlerUser {
-    assetName: string
+export class Room {
+    name: string
     constructor(name:string) {
-        this.assetName = name
+        this.name = name
         if (Object.keys(Assets).includes(this.assetName)) {return}
-        new RoomHandler(`static/json/room/${this.assetName}.json`, `${this.assetName}.data`, () => {this.callback()})
+        new RoomHandler(`static/json/room/${this.name}.json`, `${this.name},data.room`, () => {this.callback()})
         Assets[this.assetName] = {
             loaded:false,
             data: this
         } as Asset<Room>
     }
 
-    get dataAssetName() { return `${this.assetName}.data` }
+    get assetName() { return `${this.name},room`}
+    get dataAssetName() { return `${this.name},data.room` }
     get dataAsset() { return Assets[this.dataAssetName] as Asset<RoomJSONData>}
     get data() { return this.dataAsset.data}
     get groundLevel() { return this.data.groundLevel }

@@ -1,11 +1,9 @@
-import { devRenderGround, devRenderRoom, devRenderTileOutline, renderRoom } from "./Grid.js"
+import { devRenderGround, devRenderRoom, devRenderTileOutline, renderRoom } from "./Render.js"
 import { Assets, Failed, ImageHandler, RoomHandler} from "./Handlers.js"
-import { AnimHandler, dataCtx } from "./Animation.js"
-import { DrawPlayer, Move, key, playerPos } from "./Player.js"
+import { AnimHandler, dataCtx, drawLoopingAnimFrame } from "./Animation.js"
+import { DrawPlayer, Move, key, currentChar, playerInit, playerPos, screenPlayerPos } from "./Player.js"
 import { Vec3, Vec2 } from "./Maths.js"
 import { Room } from "./Room.js"
-import { Tile } from "./Tile.js"
-import { Asset } from "./Const.js"
 
 // check if all handlers are loaded
 export function ready():boolean {for (const ele in Assets) {if (!Assets[ele].loaded) {return false}}; return true}
@@ -33,18 +31,12 @@ window.onload = () => {
 function init() {
     ctx.imageSmoothingEnabled = false
     dataCtx.imageSmoothingEnabled = false
-    // init stuff
 
-    new Room("dev.room")
-    new AnimHandler("dev.char", {
-        "+x":0,
-        "-x":1,
-        "+y":2,
-        "-y":3,
-        "+z":4,
-        "-z":5
-    })
-    new Room("dev.room")
+
+    // init stuff
+    playerInit()
+    new Room("dev")
+    new AnimHandler(currentChar)
     
     
 
@@ -62,10 +54,6 @@ function loop() {
         console.info("Handlers Loaded")
 
         first = false
-        // console.log(Assets)
-        // console.log(TileRegistry)
-        // console.log(testAnim)
-
     }
     if (Failed) {
         console.error("Handler Failed")
@@ -77,13 +65,6 @@ function loop() {
         // debugger
 
         Draw()
-        // console.log(playerPos)
-        ctx.putImageData((Assets["dev.char.anim"] as Asset<AnimHandler>).data.frameImgName("+x", Math.round(time/10), 10), 10, 10)
-        ctx.putImageData((Assets["dev.char.anim"] as Asset<AnimHandler>).data.frameImgName("-x", Math.round(time/10), 10), 100, 10)
-        ctx.putImageData((Assets["dev.char.anim"] as Asset<AnimHandler>).data.frameImgName("+y", Math.round(time/10), 10), 190, 10)
-        ctx.putImageData((Assets["dev.char.anim"] as Asset<AnimHandler>).data.frameImgName("-y", Math.round(time/10), 10), 280, 10)
-        ctx.putImageData((Assets["dev.char.anim"] as Asset<AnimHandler>).data.frameImgName("+z", Math.round(time/10), 10), 370, 10)
-        ctx.putImageData((Assets["dev.char.anim"] as Asset<AnimHandler>).data.frameImgName("-z", Math.round(time/10), 10), 460, 10)
 
         Move()
         time++
@@ -94,10 +75,12 @@ function loop() {
 
 function Draw() {
     ctx.clearRect(0,0,canvasSize.width, canvasSize.height)
-
-    renderRoom(ctx, Assets["dev.room"].data, playerPos)
-    devRenderRoom(ctx, Assets["dev.room"].data, playerPos)
-    DrawPlayer(ctx)
-
+    // ctx.strokeStyle = "#000000"
+    
     // devRenderGround(ctx)
+    renderRoom(ctx, "dev", playerPos)
+    // devRenderRoom(ctx, Assets["dev.room"].data, playerPos)
+    DrawPlayer(ctx, new Vec3(2,1,2), time)
+
+    
 }

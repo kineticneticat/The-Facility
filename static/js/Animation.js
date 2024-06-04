@@ -1,5 +1,5 @@
 import { Vec2 } from "./Maths.js";
-import { ImageHandler, Assets } from "./Handlers.js";
+import { ImageHandler, Assets, JSONHandler } from "./Handlers.js";
 let dataCanvas = document.getElementById("datacanvas");
 export let dataCtx = dataCanvas.getContext("2d", { willReadFrequently: true });
 /** doesnt really follow the other handlers, but it literally handles animations
@@ -8,37 +8,48 @@ export class AnimHandler {
     name;
     meta;
     alias;
+    imgdata;
     /**
      *
      * @param name name of animation, used for asset & file
-     * @param alias optional to allow for using names instead of ids
      * @constructor
      * */
-    constructor(name, alias) {
+    constructor(name) {
         this.name = name;
         this.meta = [];
-        this.alias = alias ? alias : {};
+        this.alias = {};
         if (Object.keys(Assets).includes(this.assetName)) {
             return;
         }
-        new ImageHandler(`static/img/char/${this.name}.anim.png`, this.imgAssetName, () => { this.callback(); });
+        new JSONHandler(`static/anim/data/${this.name}.data.json`, this.dataAssetName, () => { this.dataCallback(); });
+        new ImageHandler(`static/anim/img/${this.name}.anim.png`, this.imgAssetName, () => { this.imgCallback(); });
         Assets[this.assetName] = {
             loaded: false,
             data: this
         };
     }
-    get assetName() { return `${this.name}.anim`; }
+    get assetName() { return `${this.name},anim`; }
+    get imgAssetName() { return `${this.name},anim.img`; }
     get imgAsset() { return Assets[this.imgAssetName]; }
-    get imgAssetName() { return `${this.name}.anim.img`; }
     get img() { return this.imgAsset.data; }
-    callback() {
+    get dataAssetName() { return `${this.name},anim.data`; }
+    get dataAsset() { return Assets[this.dataAssetName]; }
+    get data() { return this.dataAsset.data; }
+    dataCallback() {
+        this.alias = this.data.alias;
+    }
+    imgCallback() {
         this.extractData();
+        this.finish();
+    }
+    finish() {
         Assets[this.assetName].loaded = true;
     }
     getImageData(x, y, w, h, s) {
-        if (!s) {
-            s = 1;
-        }
+        if (this.imgdata) {
+            return this.imgdata;
+        } // imgdata might be cached
+        s = s ? s : 1;
         //make the canvas the right size, put then pull the image
         //why is this so weird
         dataCanvas.width = this.img.width * s;
@@ -46,7 +57,8 @@ export class AnimHandler {
         dataCtx.imageSmoothingEnabled = false;
         dataCtx.scale(s, s);
         dataCtx.drawImage(this.img, 0, 0);
-        return dataCtx.getImageData(x * s, y * s, w * s, h * s);
+        this.imgdata = dataCtx.getImageData(x * s, y * s, w * s, h * s);
+        return this.imgdata;
     }
     extractData() {
         let rawMeta = this.getImageData(0, 0, this.img.width, 1);
@@ -72,24 +84,28 @@ export class AnimHandler {
     /**
      *
      * @param id id of frame
-     * @param t time
+     * @param f frame
      * @param s scale
      * @returns imageData of frame
      */
-    frameImgID(id, t, s) {
+    frameImgID(id, f, s) {
         s = s ? s : 1;
-        let pos = this.meta[id].framePos.add([this.meta[id].frameSize.x * (t % this.meta[id].frameCount), 0]);
+        let pos = this.meta[id].framePos.add([this.meta[id].frameSize.x * (f % this.meta[id].frameCount), 0]);
         return this.getImageData(...pos.add([0, 1]).xy, ...this.meta[id].frameSize.xy, s);
     }
     /**
      * returns the specified frame
      * @param name name w/ respect to alias
-     * @param t time
+     * @param f frame
      * @param s scale
      * @returns imageData of frame
      */
-    frameImgName(name, t, s) {
-        return this.frameImgID(this.alias[name], t, s);
+    frameImgName(name, f, s) {
+        return this.frameImgID(this.alias[name], f, s);
     }
+}
+export function drawLoopingAnimFrame(ctx, asset, name, frame, scale, pos, corner) {
+    let img = Assets[asset].data.frameImgName(name, frame, scale);
+    ctx.putImageData(img, ...corner(pos, Vec2.fromImgData(img)).xy);
 }
 //# sourceMappingURL=Animation.js.map

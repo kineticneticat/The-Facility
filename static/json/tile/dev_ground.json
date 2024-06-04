@@ -1,5 +1,5 @@
 {
-    "name": "dev_ground.tile",
+    "name": "dev_ground",
     "corners": {
         "000": [0,0,0],
         "100": [1,0,0],

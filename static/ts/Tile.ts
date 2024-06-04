@@ -1,9 +1,9 @@
-import { Asset, Corners, SimpleMap, TileJSONData } from "./Const.js";
-import { Assets, HandlerUser, ImageHandler, TileHandler } from "./Handlers.js";
+import { Asset, Corners, RoomJSONData, SimpleMap, TileJSONData } from "./Const.js";
+import { Assets, ImageHandler, TileHandler } from "./Handlers.js";
 import { ready } from "./Main.js";
 import { Vec3 } from "./Maths.js";
 
-export class Tile implements HandlerUser {
+export class Tile {
     assetName: string
     dataLoaded:boolean
     imgLoaded:boolean
@@ -23,15 +23,14 @@ export class Tile implements HandlerUser {
     callback() {
         if (!(this.dataLoaded && this.imgLoaded)) { return }
 
-
         Assets[this.assetName].loaded = true
     }
 
-    get dataAssetName() { return `${this.assetName}.data` }
-    get imgAssetName() { return `${this.assetName}.img` }
+    get dataAssetName() { return `${this.assetName},data.tile` }
+    get imgAssetName() { return `${this.assetName},img.tile` }
 
-    get dataAsset() { return Assets[this.dataAssetName] }
-    get imgAsset() { return Assets[this.imgAssetName] }
+    get dataAsset() { return Assets[this.dataAssetName] as Asset<TileJSONData> }
+    get imgAsset() { return Assets[this.imgAssetName] as Asset<HTMLImageElement> }
 
     get data(): TileJSONData {return this.dataAsset.data as TileJSONData}
     get img(): HTMLImageElement {return this.imgAsset.data as HTMLImageElement}

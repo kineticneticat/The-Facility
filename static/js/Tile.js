@@ -24,8 +24,8 @@ export class Tile {
         }
         Assets[this.assetName].loaded = true;
     }
-    get dataAssetName() { return `${this.assetName}.data`; }
-    get imgAssetName() { return `${this.assetName}.img`; }
+    get dataAssetName() { return `${this.assetName},data.tile`; }
+    get imgAssetName() { return `${this.assetName},img.tile`; }
     get dataAsset() { return Assets[this.dataAssetName]; }
     get imgAsset() { return Assets[this.imgAssetName]; }
     get data() { return this.dataAsset.data; }

@@ -12,6 +12,7 @@ export class Vec2 {
         this.y = y
     }
     static list(arr:[number, number]):Vec2 {return new Vec2(arr[0], arr[1])}
+    static fromImgData(img:ImageData) {return new Vec2(img.width, img.height)}
     get xy():[number, number] {return [this.x, this.y]}
     get len() {return Maths.sqrt(this.x**2 + this.y**2)}
     map(lambda: (x:number) => number) { return new Vec2(lambda(this.x), lambda(this.y)) }

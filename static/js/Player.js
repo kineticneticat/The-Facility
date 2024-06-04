@@ -1,7 +1,32 @@
-import { dt, walkSpeed } from "./Const.js";
+import { drawLoopingAnimFrame } from "./Animation.js";
+import { drawPos, dt, walkSpeed } from "./Const.js";
 import { Vec3 } from "./Maths.js";
 export let playerPos = new Vec3(0, 0, 0);
-export let currentChar = "dev.char";
+export let currentChar = "devchar";
+export let screenPlayerPos;
+var PlayerAnimStates;
+(function (PlayerAnimStates) {
+    PlayerAnimStates["IDLE"] = "";
+    PlayerAnimStates["FORWARDS"] = "+x";
+    PlayerAnimStates["BACKWARDS"] = "-x";
+    PlayerAnimStates["LEFT"] = "+z";
+    PlayerAnimStates["RIGHT"] = "-Z";
+    PlayerAnimStates["UP"] = "+y";
+    PlayerAnimStates["DOWN"] = "-y";
+})(PlayerAnimStates || (PlayerAnimStates = {}));
+export let playerAnimState;
+export function playerInit() {
+    screenPlayerPos = new Vec3(3, 0, 3).screen;
+    playerAnimState = PlayerAnimStates.IDLE;
+}
+export function updatePlayerState() {
+    playerAnimState = key.Forwards ? PlayerAnimStates.FORWARDS : PlayerAnimStates.IDLE;
+    playerAnimState = key.Backwards ? PlayerAnimStates.BACKWARDS : PlayerAnimStates.IDLE;
+    playerAnimState = key.Left ? PlayerAnimStates.LEFT : PlayerAnimStates.IDLE;
+    playerAnimState = key.Right ? PlayerAnimStates.RIGHT : PlayerAnimStates.IDLE;
+    playerAnimState = key.Up ? PlayerAnimStates.UP : PlayerAnimStates.IDLE;
+    playerAnimState = key.Down ? PlayerAnimStates.DOWN : PlayerAnimStates.IDLE;
+}
 export function Move() {
     let deltaPos = new Vec3(0, 0, 0);
     deltaPos = key.Forwards ? deltaPos.add(UnitDirections.FORWARDS.mul(walkSpeed)) : deltaPos;
@@ -12,7 +37,10 @@ export function Move() {
     deltaPos = key.Down ? deltaPos.add(UnitDirections.DOWN.mul(walkSpeed)) : deltaPos;
     playerPos = playerPos.add(deltaPos.mul(dt));
 }
-export function DrawPlayer(ctx) {
+export function DrawPlayer(ctx, pos, time) {
+    updatePlayerState();
+    let screenpos = pos.screen;
+    drawLoopingAnimFrame(ctx, "devchar,anim", playerAnimState, Math.round(time / 10), 10, screenpos, drawPos.CENTRE);
 }
 var keyCodes;
 (function (keyCodes) {
@@ -30,8 +58,8 @@ var keyCodes;
 export const UnitDirections = {
     FORWARDS: new Vec3(1, 0, 0),
     BACKWARDS: new Vec3(-1, 0, 0),
-    RIGHT: new Vec3(0, 0, -1),
     LEFT: new Vec3(0, 0, 1),
+    RIGHT: new Vec3(0, 0, -1),
     UP: new Vec3(0, 1, 0),
     DOWN: new Vec3(0, -1, 0)
 };
@@ -41,7 +69,8 @@ export let key = {
     Left: false,
     Right: false,
     Up: false,
-    Down: false
+    Down: false,
+    any: () => { return key.Forwards || key.Backwards || key.Left || key.Right || key.Up || key.Down; }
 };
 document.addEventListener('keydown', (e) => {
     // console.log(e.keyCode)

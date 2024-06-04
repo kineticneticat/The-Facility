@@ -1,4 +1,4 @@
-import { gridDim, tripleLoop } from "./Const.js";
+import { Asset, doubleLoop, gridDim, tripleLoop } from "./Const.js";
 import { Assets } from "./Handlers.js";
 import { Vec3, Vec2 } from "./Maths.js";
 import { Room } from "./Room.js";
@@ -12,9 +12,10 @@ export function renderTile(ctx:CanvasRenderingContext2D, tile:Tile, pos:Vec3):vo
     ctx.drawImage(tile.img, ...pos.screen.sub(scaledsize.div(2)).xy, ...scaledsize.xy)
 }
 
-export function renderRoom(ctx:CanvasRenderingContext2D, room:Room, pos:Vec3): void {
+export function renderRoom(ctx:CanvasRenderingContext2D, roomName:string, pos:Vec3): void {
+    let room = Assets[roomName+",room"].data as Room
     let subset = room.subset(pos)
-    tripleLoop(subset, (y, x, z, ele) => {
+    tripleLoop<string, void>(subset, (y, x, z, ele) => {
         let tileName = subset[y][4-x][4-z]
         if (!tileName) { return }
         let tile = Assets[tileName].data
@@ -46,28 +47,28 @@ export function devRenderTileOutline(ctx:CanvasRenderingContext2D, tile:Tile, po
     // ctx.strokeStyle = (pos.x==0 && pos.z==0)? "rgb(255, 255, 255)" : "rgb(219, 57, 24)"
 
     ctx.beginPath()
-    let a = (x: Vec3) => x.screen.xy
+    let process = (x: Vec3) => x.screen.xy
     let zeroCorner = pos.add(new Vec3(.5, .5, .5))
-    ctx.moveTo(...a(zeroCorner.add(tile.corners("000"))))
-    ctx.lineTo(...a(zeroCorner.add(tile.corners("100"))))
-    ctx.lineTo(...a(zeroCorner.add(tile.corners("101"))))
-    ctx.lineTo(...a(zeroCorner.add(tile.corners("001"))))
-    ctx.lineTo(...a(zeroCorner.add(tile.corners("000"))))
+    ctx.moveTo(...process(zeroCorner.add(tile.corners("000"))))
+    ctx.lineTo(...process(zeroCorner.add(tile.corners("100"))))
+    ctx.lineTo(...process(zeroCorner.add(tile.corners("101"))))
+    ctx.lineTo(...process(zeroCorner.add(tile.corners("001"))))
+    ctx.lineTo(...process(zeroCorner.add(tile.corners("000"))))
 
-    ctx.moveTo(...a(zeroCorner.add(tile.corners("010"))))
-    ctx.lineTo(...a(zeroCorner.add(tile.corners("110"))))
-    ctx.lineTo(...a(zeroCorner.add(tile.corners("111"))))
-    ctx.lineTo(...a(zeroCorner.add(tile.corners("011"))))
-    ctx.lineTo(...a(zeroCorner.add(tile.corners("010"))))
+    ctx.moveTo(...process(zeroCorner.add(tile.corners("010"))))
+    ctx.lineTo(...process(zeroCorner.add(tile.corners("110"))))
+    ctx.lineTo(...process(zeroCorner.add(tile.corners("111"))))
+    ctx.lineTo(...process(zeroCorner.add(tile.corners("011"))))
+    ctx.lineTo(...process(zeroCorner.add(tile.corners("010"))))
 
-    ctx.moveTo(...a(zeroCorner.add(tile.corners("000"))))
-    ctx.lineTo(...a(zeroCorner.add(tile.corners("010"))))
-    ctx.moveTo(...a(zeroCorner.add(tile.corners("100"))))
-    ctx.lineTo(...a(zeroCorner.add(tile.corners("110"))))
-    ctx.moveTo(...a(zeroCorner.add(tile.corners("101"))))
-    ctx.lineTo(...a(zeroCorner.add(tile.corners("111"))))
-    ctx.moveTo(...a(zeroCorner.add(tile.corners("001"))))
-    ctx.lineTo(...a(zeroCorner.add(tile.corners("011"))))
+    ctx.moveTo(...process(zeroCorner.add(tile.corners("000"))))
+    ctx.lineTo(...process(zeroCorner.add(tile.corners("010"))))
+    ctx.moveTo(...process(zeroCorner.add(tile.corners("100"))))
+    ctx.lineTo(...process(zeroCorner.add(tile.corners("110"))))
+    ctx.moveTo(...process(zeroCorner.add(tile.corners("101"))))
+    ctx.lineTo(...process(zeroCorner.add(tile.corners("111"))))
+    ctx.moveTo(...process(zeroCorner.add(tile.corners("001"))))
+    ctx.lineTo(...process(zeroCorner.add(tile.corners("011"))))
     
     ctx.stroke()
 }
@@ -76,12 +77,15 @@ export function devRenderRoom(ctx:CanvasRenderingContext2D, room: Room, pos:Vec3
     let subset = room.subset(pos)
     tripleLoop<string, void>(subset, (y, x, z, ele) => {
         let tileName = ele
-        if (!tileName) { return }
-        let tile = Assets[tileName].data
-        // catch non-existent Tiles
-        if (!tile) { throw Error(`Tile "${tileName}" in "${room.assetName}" does not exist`) }
-        if (tile) {
-            devRenderTileOutline(ctx, tile, new Vec3(x, y-7, z))
-        }
+        // is air, so ignore
+        if (tileName == "") { return }
+        // might not exist, if tile not loaded
+        let asset: Asset<Tile> | undefined = Assets[tileName]
+        //if asset doesnt exist, error
+        if (!asset) { throw Error(`Tile "${tileName}" in "${room.assetName}" does not exist`) }
+
+        let tile = asset.data
+        devRenderTileOutline(ctx, tile, new Vec3(x, y-7, z))
+        
     })
 }
