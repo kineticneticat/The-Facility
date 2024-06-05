@@ -1,6 +1,7 @@
 import { drawLoopingAnimFrame } from "./Animation.js";
-import { drawPos, dt, walkSpeed } from "./Const.js";
+import { UnitDirections, drawPos, dt, walkSpeed } from "./Const.js";
 import { Vec2, Vec3 } from "./Maths.js";
+import { Room } from "./Room.js";
 
 export let playerPos = new Vec3(0, 0,0)
 export let currentChar = "devchar"
@@ -11,7 +12,7 @@ enum PlayerAnimStates {
 	FORWARDS = "+x",
 	BACKWARDS = "-x",
 	LEFT = "+z",
-	RIGHT = "-Z",
+	RIGHT = "-z",
 	UP = "+y",
 	DOWN = "-y"
 
@@ -24,12 +25,17 @@ export function playerInit() {
 }
 
 export function updatePlayerState() {
-	playerAnimState = key.Forwards ? PlayerAnimStates.FORWARDS : PlayerAnimStates.IDLE
-	playerAnimState = key.Backwards ? PlayerAnimStates.BACKWARDS : PlayerAnimStates.IDLE
-	playerAnimState = key.Left ? PlayerAnimStates.LEFT : PlayerAnimStates.IDLE
-	playerAnimState = key.Right ? PlayerAnimStates.RIGHT : PlayerAnimStates.IDLE
-	playerAnimState = key.Up ? PlayerAnimStates.UP : PlayerAnimStates.IDLE
-	playerAnimState = key.Down ? PlayerAnimStates.DOWN : PlayerAnimStates.IDLE
+	playerAnimState = key.Forwards ? PlayerAnimStates.FORWARDS : playerAnimState
+	playerAnimState = key.Backwards ? PlayerAnimStates.BACKWARDS : playerAnimState
+	playerAnimState = key.Left ? PlayerAnimStates.LEFT : playerAnimState
+	playerAnimState = key.Right ? PlayerAnimStates.RIGHT : playerAnimState
+	playerAnimState = key.Up ? PlayerAnimStates.UP : playerAnimState
+	playerAnimState = key.Down ? PlayerAnimStates.DOWN : playerAnimState
+	playerAnimState = !key.any() ? PlayerAnimStates.IDLE : playerAnimState
+}
+
+export function isMoveAllowed(currentPos:Vec3, deltaAttempt:Vec3, room: Room) {
+
 }
 
 export function Move() {
@@ -66,15 +72,6 @@ enum keyCodes {
 
 	SPACE = 32,
 	SHIFT = 16
-}
-
-export const UnitDirections = {
-    FORWARDS: new Vec3(1,0,0),
-    BACKWARDS: new Vec3(-1,0,0),
-    LEFT: new Vec3(0,0,1),
-    RIGHT: new Vec3(0,0,-1),
-    UP: new Vec3(0,1,0),
-    DOWN: new Vec3(0,-1,0)
 }
 
 export let key = {

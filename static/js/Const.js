@@ -1,3 +1,4 @@
+import { Vec3 } from "./Maths";
 export const gridDim = 5;
 export const underView = 10;
 export const blankSubsetLayer = [
@@ -51,4 +52,12 @@ export let drawPos = {
     TOPLEFT: (topleft, size) => { return topleft; }
 };
 export function f(obj) { return Object.fromEntries(Object.entries(obj).map(([k, v]) => [v, k])); }
+export const UnitDirections = {
+    FORWARDS: new Vec3(1, 0, 0),
+    BACKWARDS: new Vec3(-1, 0, 0),
+    LEFT: new Vec3(0, 0, 1),
+    RIGHT: new Vec3(0, 0, -1),
+    UP: new Vec3(0, 1, 0),
+    DOWN: new Vec3(0, -1, 0)
+};
 //# sourceMappingURL=Const.js.map

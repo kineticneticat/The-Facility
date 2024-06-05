@@ -1,4 +1,4 @@
-import { Vec2 } from "./Maths"
+import { Vec2, Vec3 } from "./Maths"
 
 export type Asset<T> = {
     loaded: boolean,
@@ -25,7 +25,8 @@ export type TileJSONData =  {
         "011": [number, number, number],
         "111": [number, number, number]
     },
-    texture: string
+    texture: string,
+    solid: boolean
 }
 export interface ImageData {
     img: HTMLImageElement
@@ -99,6 +100,15 @@ export type Vec2List = [number, number]
 
 export type AnimData = {
     offset: Vec2List,
-    meta: {topleft: Vec2List, size: Vec2List}[]
+    meta: {topleft: Vec2List, size: Vec2List, frames: number}[]
     alias: {[name: string]: number}
+}
+
+export const UnitDirections = {
+    FORWARDS: new Vec3(1,0,0),
+    BACKWARDS: new Vec3(-1,0,0),
+    LEFT: new Vec3(0,0,1),
+    RIGHT: new Vec3(0,0,-1),
+    UP: new Vec3(0,1,0),
+    DOWN: new Vec3(0,-1,0)
 }

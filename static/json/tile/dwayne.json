@@ -10,5 +10,6 @@
         "011": [0.5,1,0.5],
         "111": [0.5,1,0.5]
     },
-    "texture": "tiles/dwayne.png"
+    "texture": "tiles/dwayne.png",
+    "solid": true
 }

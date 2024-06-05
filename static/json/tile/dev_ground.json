@@ -10,5 +10,6 @@
         "011": [0,1,1],
         "111": [1,1,1]
     },
-    "texture": "tiles/dev_ground.png"
+    "texture": "tiles/dev_ground.png",
+    "solid": true
 }

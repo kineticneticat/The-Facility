@@ -9,6 +9,8 @@ export class AnimHandler {
     meta;
     alias;
     imgdata;
+    dataLoaded = false;
+    imgLoaded = false;
     /**
      *
      * @param name name of animation, used for asset & file
@@ -36,11 +38,24 @@ export class AnimHandler {
     get dataAsset() { return Assets[this.dataAssetName]; }
     get data() { return this.dataAsset.data; }
     dataCallback() {
+        this.dataLoaded = true;
         this.alias = this.data.alias;
+        for (const idx in this.data.meta) {
+            this.meta.push({
+                framePos: Vec2.list(this.data.meta[idx].topleft),
+                frameSize: Vec2.list(this.data.meta[idx].size),
+                frameCount: this.data.meta[idx].frames
+            });
+        }
+        if (this.dataLoaded && this.imgLoaded) {
+            this.finish();
+        }
     }
     imgCallback() {
-        this.extractData();
-        this.finish();
+        this.imgLoaded = true;
+        if (this.dataLoaded && this.imgLoaded) {
+            this.finish();
+        }
     }
     finish() {
         Assets[this.assetName].loaded = true;
@@ -57,30 +72,25 @@ export class AnimHandler {
         dataCtx.imageSmoothingEnabled = false;
         dataCtx.scale(s, s);
         dataCtx.drawImage(this.img, 0, 0);
-        this.imgdata = dataCtx.getImageData(x * s, y * s, w * s, h * s);
-        return this.imgdata;
+        return dataCtx.getImageData(x * s, y * s, w * s, h * s);
     }
-    extractData() {
-        let rawMeta = this.getImageData(0, 0, this.img.width, 1);
-        let runningmax = -1;
-        for (let i = 0; i < rawMeta.data.length; i += 12) {
-            let chunk = rawMeta.data.slice(i, i + 12);
-            // if width is not a multiple of 3 (12 rgba values) then final chunk will be short, therefore invalid, so skip
-            if (chunk.length != 12) {
-                continue;
-            }
-            // metums must be in order to filter out invalid ones
-            if (chunk[1] < runningmax) {
-                continue;
-            }
-            runningmax = chunk[1];
-            this.meta.push({
-                framePos: new Vec2(chunk[0], chunk[1]),
-                frameSize: new Vec2(chunk[4], chunk[5]),
-                frameCount: chunk[8],
-            });
-        }
-    }
+    // extractData() {
+    // let rawMeta = this.getImageData(0, 0, this.img.width, 1);
+    // let runningmax = -1;
+    // for (let i = 0; i < rawMeta.data.length; i += 12) {
+    //     let chunk = rawMeta.data.slice(i, i + 12);
+    //     // if width is not a multiple of 3 (12 rgba values) then final chunk will be short, therefore invalid, so skip
+    //     if (chunk.length != 12) { continue; }
+    //     // metums must be in order to filter out invalid ones
+    //     if (chunk[1] < runningmax) { continue; }
+    //     runningmax = chunk[1];
+    //     this.meta.push({
+    //         framePos: new Vec2(chunk[0], chunk[1]),
+    //         frameSize: new Vec2(chunk[4], chunk[5]),
+    //         frameCount: chunk[8],
+    //     } as RowMetum);
+    // }
+    // }
     /**
      *
      * @param id id of frame
@@ -91,7 +101,7 @@ export class AnimHandler {
     frameImgID(id, f, s) {
         s = s ? s : 1;
         let pos = this.meta[id].framePos.add([this.meta[id].frameSize.x * (f % this.meta[id].frameCount), 0]);
-        return this.getImageData(...pos.add([0, 1]).xy, ...this.meta[id].frameSize.xy, s);
+        return this.getImageData(...pos.xy, ...this.meta[id].frameSize.xy, s);
     }
     /**
      * returns the specified frame

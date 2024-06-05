@@ -62,7 +62,8 @@ export class Vec3 {
             .div(3.5)
             .hadm([1, -1])
             .mul(canvasSize.height / 2.75)
-            .add([canvasSize.width / 2, canvasSize.height / 2]);
+            .add([canvasSize.width / 2, canvasSize.height / 2])
+            .round;
     }
 }
 //# sourceMappingURL=Maths.js.map

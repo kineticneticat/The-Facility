@@ -76,5 +76,6 @@ export class Vec3 {
             .hadm([1,-1])
             .mul(canvasSize.height/2.75)
             .add([canvasSize.width/2, canvasSize.height/2])
+            .round
     }
 }

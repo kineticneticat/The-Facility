@@ -3,7 +3,38 @@
     "meta": [
         {
             "topleft": [0,0],
-            "size": [8, 8]
+            "size": [8, 8],
+            "frames": 5
+        },
+        {
+            "topleft": [0,8],
+            "size": [8, 8],
+            "frames": 5
+        },
+        {
+            "topleft": [0,16],
+            "size": [8, 8],
+            "frames": 5
+        },
+        {
+            "topleft": [0,24],
+            "size": [8, 8],
+            "frames": 5
+        },
+        {
+            "topleft": [0,32],
+            "size": [8, 8],
+            "frames": 5
+        },
+        {
+            "topleft": [0,40],
+            "size": [8, 8],
+            "frames": 5
+        },
+        {
+            "topleft": [0,48],
+            "size": [8, 8],
+            "frames": 5
         }
     ],
     "alias": {
