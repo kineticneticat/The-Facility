@@ -52,7 +52,7 @@ function loop() {
         // all handlers loaded
         // debugger
         Draw();
-        Move();
+        Move("dev");
         time++;
     }
     requestAnimationFrame(loop);

@@ -1,7 +1,9 @@
 import { drawLoopingAnimFrame } from "./Animation.js";
-import { UnitDirections, drawPos, dt, walkSpeed } from "./Const.js";
+import { Asset, UnitDirections, drawPos, dt, walkSpeed } from "./Const.js";
+import { Assets, getAssetData } from "./Handlers.js";
 import { Vec2, Vec3 } from "./Maths.js";
 import { Room } from "./Room.js";
+import { Tile } from "./Tile.js";
 
 export let playerPos = new Vec3(0, 0,0)
 export let currentChar = "devchar"
@@ -34,11 +36,14 @@ export function updatePlayerState() {
 	playerAnimState = !key.any() ? PlayerAnimStates.IDLE : playerAnimState
 }
 
-export function isMoveAllowed(currentPos:Vec3, deltaAttempt:Vec3, room: Room) {
+export function isMoveAllowed(currentPos:Vec3, deltaAttempt:Vec3, roomname: string) {
+	let room = getAssetData<Room>(`${roomname},room`)
+	return getAssetData<Tile>(room.tile(currentPos.add(deltaAttempt.round(0)))).solid
+	|| getAssetData<Tile>(room.tile(currentPos.add(deltaAttempt.norm).add(Vec3.j.neg))).solid
 
 }
 
-export function Move() {
+export function Move(roomname: string) {
     let deltaPos = new Vec3(0,0,0)
 	deltaPos = key.Forwards ? deltaPos.add(UnitDirections.FORWARDS.mul(walkSpeed)) : deltaPos
 	deltaPos = key.Backwards ? deltaPos.add(UnitDirections.BACKWARDS.mul(walkSpeed)) : deltaPos
@@ -49,7 +54,7 @@ export function Move() {
 	deltaPos = key.Down ? deltaPos.add(UnitDirections.DOWN.mul(walkSpeed)) : deltaPos
 
 
-	playerPos = playerPos.add(deltaPos.mul(dt))
+	if (isMoveAllowed(playerPos, deltaPos, roomname)) {playerPos = playerPos.add(deltaPos.mul(dt))}
 }
 
 export function DrawPlayer(ctx:CanvasRenderingContext2D, pos: Vec3, time:number) {

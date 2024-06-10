@@ -1,18 +1,18 @@
-import { Assets, ImageHandler, TileHandler } from "./Handlers.js";
+import { Assets, ImageHandler, TileHandler, getAsset } from "./Handlers.js";
 import { Vec3 } from "./Maths.js";
 export class Tile {
-    assetName;
+    name;
     dataLoaded;
     imgLoaded;
     constructor(name) {
-        this.assetName = name;
+        this.name = name;
         this.dataLoaded = false;
         this.imgLoaded = false;
         if (Object.keys(Assets).includes(this.assetName)) {
             return;
         }
-        new ImageHandler(`static/img/tile/${this.assetName}.png`, this.imgAssetName, () => { this.imgLoaded = true; this.callback(); });
-        new TileHandler(`static/json/tile/${this.assetName}.json`, this.dataAssetName, () => { this.dataLoaded = true; this.callback(); });
+        new ImageHandler(`static/img/tile/${this.name}.png`, this.imgAssetName, () => { this.imgLoaded = true; this.callback(); });
+        new TileHandler(`static/json/tile/${this.name}.json`, this.dataAssetName, () => { this.dataLoaded = true; this.callback(); });
         Assets[this.assetName] = {
             loaded: false,
             data: this
@@ -24,12 +24,14 @@ export class Tile {
         }
         Assets[this.assetName].loaded = true;
     }
-    get dataAssetName() { return `${this.assetName},data.tile`; }
-    get imgAssetName() { return `${this.assetName},img.tile`; }
-    get dataAsset() { return Assets[this.dataAssetName]; }
-    get imgAsset() { return Assets[this.imgAssetName]; }
+    get assetName() { return `${this.name},tile`; }
+    get dataAssetName() { return `${this.name},data.tile`; }
+    get imgAssetName() { return `${this.name},img.tile`; }
+    get dataAsset() { return getAsset(this.dataAssetName); }
+    get imgAsset() { return getAsset(this.imgAssetName); }
     get data() { return this.dataAsset.data; }
     get img() { return this.imgAsset.data; }
+    get solid() { return this.data.solid; }
     corners(corner) {
         return Vec3.list(this.data.corners[corner]);
     }

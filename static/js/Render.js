@@ -16,15 +16,13 @@ export function renderRoom(ctx, roomName, pos) {
         if (!tileName) {
             return;
         }
-        let tile = Assets[tileName].data;
-        // catch non-existent Tiles
-        if (!tile) {
+        let asset = Assets[tileName + ",tile"];
+        // if tile isnt loaded for some reason
+        if (!asset) {
             console.log(Assets);
             throw Error(`Tile "${tileName}" in "${room.assetName}" does not exist`);
         }
-        if (tile) {
-            renderTile(ctx, tile, new Vec3(4 - x, y - 5, 4 - z));
-        }
+        renderTile(ctx, asset.data, new Vec3(4 - x, y - 5, 4 - z));
     });
 }
 export function devRenderGround(ctx) {
@@ -69,20 +67,19 @@ export function devRenderTileOutline(ctx, tile, pos) {
 }
 export function devRenderRoom(ctx, room, pos) {
     let subset = room.subset(pos);
-    tripleLoop(subset, (y, x, z, ele) => {
-        let tileName = ele;
+    tripleLoop(subset, (y, x, z, tileName) => {
         // is air, so ignore
         if (tileName == "") {
             return;
         }
         // might not exist, if tile not loaded
-        let asset = Assets[tileName];
+        let asset = Assets[tileName + ",tile"];
         //if asset doesnt exist, error
         if (!asset) {
+            console.log(Assets);
             throw Error(`Tile "${tileName}" in "${room.assetName}" does not exist`);
         }
-        let tile = asset.data;
-        devRenderTileOutline(ctx, tile, new Vec3(x, y - 7, z));
+        devRenderTileOutline(ctx, asset.data, new Vec3(x, y - 7, z));
     });
 }
 //# sourceMappingURL=Render.js.map

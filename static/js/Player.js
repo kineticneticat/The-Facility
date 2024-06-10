@@ -1,5 +1,6 @@
 import { drawLoopingAnimFrame } from "./Animation.js";
 import { UnitDirections, drawPos, dt, walkSpeed } from "./Const.js";
+import { getAssetData } from "./Handlers.js";
 import { Vec3 } from "./Maths.js";
 export let playerPos = new Vec3(0, 0, 0);
 export let currentChar = "devchar";
@@ -28,9 +29,12 @@ export function updatePlayerState() {
     playerAnimState = key.Down ? PlayerAnimStates.DOWN : playerAnimState;
     playerAnimState = !key.any() ? PlayerAnimStates.IDLE : playerAnimState;
 }
-export function isMoveAllowed(currentPos, deltaAttempt, room) {
+export function isMoveAllowed(currentPos, deltaAttempt, roomname) {
+    let room = getAssetData(`${roomname},room`);
+    return getAssetData(room.tile(currentPos.add(deltaAttempt.round(0)))).solid
+        || getAssetData(room.tile(currentPos.add(deltaAttempt.norm).add(Vec3.j.neg))).solid;
 }
-export function Move() {
+export function Move(roomname) {
     let deltaPos = new Vec3(0, 0, 0);
     deltaPos = key.Forwards ? deltaPos.add(UnitDirections.FORWARDS.mul(walkSpeed)) : deltaPos;
     deltaPos = key.Backwards ? deltaPos.add(UnitDirections.BACKWARDS.mul(walkSpeed)) : deltaPos;
@@ -38,7 +42,9 @@ export function Move() {
     deltaPos = key.Right ? deltaPos.add(UnitDirections.RIGHT.mul(walkSpeed)) : deltaPos;
     deltaPos = key.Up ? deltaPos.add(UnitDirections.UP.mul(walkSpeed)) : deltaPos;
     deltaPos = key.Down ? deltaPos.add(UnitDirections.DOWN.mul(walkSpeed)) : deltaPos;
-    playerPos = playerPos.add(deltaPos.mul(dt));
+    if (isMoveAllowed(playerPos, deltaPos, roomname)) {
+        playerPos = playerPos.add(deltaPos.mul(dt));
+    }
 }
 export function DrawPlayer(ctx, pos, time) {
     updatePlayerState();

@@ -18,12 +18,11 @@ export function renderRoom(ctx:CanvasRenderingContext2D, roomName:string, pos:Ve
     tripleLoop<string, void>(subset, (y, x, z, ele) => {
         let tileName = subset[y][4-x][4-z]
         if (!tileName) { return }
-        let tile = Assets[tileName].data
-        // catch non-existent Tiles
-        if (!tile) { console.log(Assets); throw Error(`Tile "${tileName}" in "${room.assetName}" does not exist`) }
-        if (tile) {
-            renderTile(ctx, tile, new Vec3(4-x, y-5, 4-z))
-        }
+        let asset: Asset<Tile>|undefined = Assets[tileName+",tile"]
+        // if tile isnt loaded for some reason
+        if (!asset) { console.log(Assets); throw Error(`Tile "${tileName}" in "${room.assetName}" does not exist`) }
+        
+        renderTile(ctx, asset.data, new Vec3(4-x, y-5, 4-z))
     })
 }
 
@@ -75,17 +74,15 @@ export function devRenderTileOutline(ctx:CanvasRenderingContext2D, tile:Tile, po
 
 export function devRenderRoom(ctx:CanvasRenderingContext2D, room: Room, pos:Vec3) {
     let subset = room.subset(pos)
-    tripleLoop<string, void>(subset, (y, x, z, ele) => {
-        let tileName = ele
+    tripleLoop<string, void>(subset, (y, x, z, tileName) => {
         // is air, so ignore
         if (tileName == "") { return }
         // might not exist, if tile not loaded
-        let asset: Asset<Tile> | undefined = Assets[tileName]
+        let asset: Asset<Tile> | undefined = Assets[tileName+",tile"]
         //if asset doesnt exist, error
-        if (!asset) { throw Error(`Tile "${tileName}" in "${room.assetName}" does not exist`) }
+        if (!asset) { console.log(Assets); throw Error(`Tile "${tileName}" in "${room.assetName}" does not exist`) }
 
-        let tile = asset.data
-        devRenderTileOutline(ctx, tile, new Vec3(x, y-7, z))
+        devRenderTileOutline(ctx, asset.data, new Vec3(x, y-7, z))
         
     })
 }

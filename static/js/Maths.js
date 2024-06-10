@@ -10,6 +10,8 @@ export class Vec2 {
     }
     static list(arr) { return new Vec2(arr[0], arr[1]); }
     static fromImgData(img) { return new Vec2(img.width, img.height); }
+    static get i() { return new Vec2(1, 0); }
+    static get j() { return new Vec2(0, 1); }
     get xy() { return [this.x, this.y]; }
     get len() { return Maths.sqrt(this.x ** 2 + this.y ** 2); }
     map(lambda) { return new Vec2(lambda(this.x), lambda(this.y)); }
@@ -43,9 +45,14 @@ export class Vec3 {
     get xyz() { return [this.x, this.y, this.z]; }
     static list(arr) { return new Vec3(arr[0], arr[1], arr[2]); }
     map(lambda) { return new Vec3(lambda(this.x), lambda(this.y), lambda(this.z)); }
+    static get i() { return new Vec3(1, 0, 0); }
+    static get j() { return new Vec3(0, 1, 0); }
+    static get k() { return new Vec3(0, 0, 1); }
     round(places) { return this.map((x) => Maths.floor(x * (10 ** places)) / (10 ** places)); }
     truncate(places) { return this.map((x) => ((x * (10 ** places)) - (x * (10 ** places) % 1)) / (10 ** places)); }
     get len() { return Maths.sqrt(this.x ** 2 + this.y ** 2 + this.z ** 2); }
+    get norm() { return this.div(this.len); }
+    get neg() { return this.mul(-1); }
     thing(b, lambda) { return (b instanceof Vec3) ? new Vec3(lambda(this.x, b.x), lambda(this.y, b.y), lambda(this.z, b.z)) : this.thing(Vec3.list(b), lambda); }
     add(b) { return this.thing(b, (x, y) => { return x + y; }); }
     sub(b) { return this.thing(b, (x, y) => { return x - y; }); }

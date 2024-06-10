@@ -1,5 +1,5 @@
 import { Asset, RoomJSONData, RoomSubset, blankSubset, blankSubsetLayer, gridDim, tripleLoop } from "./Const.js";
-import { Assets, RoomHandler } from "./Handlers.js";
+import { Assets, RoomHandler, getAsset } from "./Handlers.js";
 import { ready } from "./Main.js";
 import { Vec3 } from "./Maths.js"
 import { Tile } from "./Tile.js";
@@ -18,10 +18,16 @@ export class Room {
 
     get assetName() { return `${this.name},room`}
     get dataAssetName() { return `${this.name},data.room` }
-    get dataAsset() { return Assets[this.dataAssetName] as Asset<RoomJSONData>}
+    get dataAsset() { return getAsset<RoomJSONData>(this.dataAssetName)}
     get data() { return this.dataAsset.data}
     get groundLevel() { return this.data.groundLevel }
     get layout() { return this.data.layout }
+    tile(pos: Vec3) {
+        pos = pos.round(0)
+        if (pos.y >= this.layout.length) {return ""}
+        if (pos.x >= this.layout[0].length) {return ""}
+        if (pos.z >= this.layout[0][0].length) {return ""}
+        return `${this.layout[pos.y][pos.x][pos.z]},tile`}
 
     callback() {
         this.loadTiles()

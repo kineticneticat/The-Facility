@@ -66,7 +66,7 @@ function loop() {
 
         Draw()
 
-        Move()
+        Move("dev")
         time++
     }
     requestAnimationFrame(loop)

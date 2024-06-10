@@ -2,6 +2,8 @@
 export let Failed = false;
 /** stores assets for use */
 export let Assets = {};
+export function getAsset(name) { return Assets[name]; }
+export function getAssetData(name) { return getAsset(name).data; }
 /** basic handler */
 class Handler {
     data;

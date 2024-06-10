@@ -5,6 +5,8 @@ export let Failed = false
 /** stores assets for use */
 export let Assets: SimpleMap<Asset<any>> = {}
 
+export function getAsset<T>(name: string) { return Assets[name] as Asset<T> }
+export function getAssetData<T>(name: string) { return getAsset<T>(name).data}
 /** basic handler */
 abstract class Handler<HandlerDataType> {
     data: HandlerDataType

@@ -1,4 +1,4 @@
-import { Vec3 } from "./Maths";
+import { Vec3 } from "./Maths.js";
 export const gridDim = 5;
 export const underView = 10;
 export const blankSubsetLayer = [

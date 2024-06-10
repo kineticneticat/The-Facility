@@ -1,4 +1,4 @@
-import { Vec2, Vec3 } from "./Maths"
+import { Vec2, Vec3 } from "./Maths.js"
 
 export type Asset<T> = {
     loaded: boolean,
